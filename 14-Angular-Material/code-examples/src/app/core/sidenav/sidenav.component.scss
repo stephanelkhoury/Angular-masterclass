@@ -1,0 +1,110 @@
+.sidenav-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.sidenav-header {
+  padding: 16px;
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  height: 40px;
+  width: 40px;
+  margin-right: 16px;
+}
+
+.app-name {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.nav-list {
+  flex: 1;
+  overflow-y: auto;
+  padding-top: 0;
+}
+
+.nav-item {
+  border-radius: 4px;
+  margin: 4px 8px;
+  transition: background-color 0.3s ease;
+}
+
+.nav-item-parent {
+  position: relative;
+  cursor: pointer;
+  border-radius: 4px;
+  margin: 4px 8px;
+}
+
+.expand-icon {
+  position: absolute;
+  right: 16px;
+}
+
+.child-nav {
+  background-color: rgba(0, 0, 0, 0.02);
+  border-radius: 4px;
+  margin-left: 16px;
+  margin-right: 8px;
+}
+
+.nav-item-child {
+  padding-left: 16px;
+  font-size: 14px;
+}
+
+.active-link {
+  background-color: rgba(33, 150, 243, 0.1);
+  color: #1976d2;
+}
+
+.dark-theme .active-link {
+  background-color: rgba(33, 150, 243, 0.2);
+  color: #90caf9;
+}
+
+.sidenav-footer {
+  margin-top: auto;
+  padding-bottom: 8px;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  padding: 16px;
+}
+
+.user-avatar {
+  font-size: 40px;
+  height: 40px;
+  width: 40px;
+  margin-right: 12px;
+  color: #1976d2;
+}
+
+.user-details {
+  overflow: hidden;
+}
+
+.user-name {
+  margin: 0;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.user-role {
+  margin: 0;
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.dark-theme .user-role {
+  color: rgba(255, 255, 255, 0.7);
+}

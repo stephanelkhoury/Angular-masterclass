@@ -1,0 +1,47 @@
+<div class="container">
+  <header>
+    <h1>{{ title }}</h1>
+    <div *ngIf="(loading$ | async)" class="loader">Loading...</div>
+    <div *ngIf="(error$ | async)" class="error">{{ error$ | async }}</div>
+  </header>
+
+  <div class="task-container">
+    <!-- Task Stats Component -->
+    <app-task-stats
+      [stats]="taskStats$ | async">
+    </app-task-stats>
+    
+    <!-- Task Filters Component -->
+    <app-task-filters
+      [currentFilter]="currentFilter$ | async"
+      (filterChange)="changeFilter($event)">
+    </app-task-filters>
+    
+    <div class="task-content">
+      <div class="task-list-container">
+        <!-- New Task Form Component -->
+        <app-task-form
+          (addTask)="addTask($event)">
+        </app-task-form>
+        
+        <!-- Task List Component -->
+        <app-task-list
+          [tasks]="filteredTasks$ | async"
+          [loading]="loading$ | async"
+          (taskToggle)="toggleTask($event)"
+          (taskSelect)="selectTask($event)"
+          (taskDelete)="deleteTask($event)">
+        </app-task-list>
+      </div>
+      
+      <div class="task-detail-container" *ngIf="(selectedTask$ | async)">
+        <!-- Task Detail Component -->
+        <app-task-detail
+          [task]="selectedTask$ | async"
+          (taskUpdate)="updateTask($event)"
+          (taskClose)="selectTask(null)">
+        </app-task-detail>
+      </div>
+    </div>
+  </div>
+</div>
