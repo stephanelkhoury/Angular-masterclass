@@ -1,0 +1,65 @@
+<!-- components/products/product-detail/product-detail.component.html -->
+
+<div class="container" *ngIf="product">
+  <div class="row">
+    <div class="col">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a routerLink="/">Home</a></li>
+          <li class="breadcrumb-item"><a routerLink="/products">Products</a></li>
+          <li class="breadcrumb-item active" aria-current="page">{{ product.name }}</li>
+        </ol>
+      </nav>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-6">
+      <img [src]="product.imageUrl" class="img-fluid" alt="{{ product.name }}">
+    </div>
+    <div class="col-md-6">
+      <h1>{{ product.name }}</h1>
+      <p class="lead">{{ product.description }}</p>
+      <p class="display-6">{{ product.price | currency }}</p>
+      <p>Category: <span class="badge bg-primary">{{ product.category | titlecase }}</span></p>
+      
+      <div class="d-grid gap-2 d-md-block">
+        <button class="btn btn-primary me-md-2" type="button">Add to Cart</button>
+        <a [routerLink]="['edit']" class="btn btn-outline-secondary" type="button">Edit Product</a>
+      </div>
+      
+      <hr>
+      
+      <h3>Navigation Examples</h3>
+      <div class="mb-3">
+        <h5>Navigate with RouterLink:</h5>
+        <div class="btn-group">
+          <a [routerLink]="['/products', prevProductId]" class="btn btn-outline-primary" [class.disabled]="!prevProductId">Previous Product</a>
+          <a [routerLink]="['/products', nextProductId]" class="btn btn-outline-primary" [class.disabled]="!nextProductId">Next Product</a>
+        </div>
+      </div>
+      
+      <div>
+        <h5>Navigate Programmatically:</h5>
+        <div class="btn-group">
+          <button (click)="gotoPreviousProduct()" class="btn btn-outline-secondary" [disabled]="!prevProductId">
+            Previous (Router Navigate)
+          </button>
+          <button (click)="gotoNextProduct()" class="btn btn-outline-secondary" [disabled]="!nextProductId">
+            Next (Router Navigate)
+          </button>
+        </div>
+      </div>
+      
+      <div class="mt-3">
+        <button (click)="goBackToList()" class="btn btn-link">Back to Products</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container" *ngIf="!product?.id">
+  <div class="alert alert-warning" role="alert">
+    Product not found. <a routerLink="/products" class="alert-link">Return to product list</a>
+  </div>
+</div>

@@ -1,0 +1,57 @@
+<!-- components/admin/admin-dashboard/admin-dashboard.component.html -->
+
+<div class="container">
+  <div class="row">
+    <div class="col">
+      <div class="alert alert-success">
+        <h4 class="alert-heading">Protected Route!</h4>
+        <p>This page is protected by the <code>AuthGuard</code>. You can only see this content if you're authenticated.</p>
+        <hr>
+        <p class="mb-0">This demonstrates how route guards protect routes in Angular applications.</p>
+      </div>
+    </div>
+  </div>
+  
+  <div class="row">
+    <div class="col">
+      <div class="card">
+        <div class="card-header bg-primary text-white">
+          <h5 class="mb-0">Admin Dashboard</h5>
+        </div>
+        <div class="card-body">
+          <p>Welcome to the admin area. Here you would typically find administrative functions.</p>
+          
+          <h6>Route Protection Implementation:</h6>
+          <pre class="bg-light p-3">
+// Route configuration
+const routes: Routes = [
+  { 
+    path: 'admin', 
+    component: AdminDashboardComponent,
+    canActivate: [AuthGuard] 
+  }
+];
+
+// Auth Guard implementation
+@Injectable({providedIn: 'root'})
+export class AuthGuard implements CanActivate {
+  constructor(
+    private authService: AuthService,
+    private router: Router
+  ) {}
+  
+  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
+    if (this.authService.isAuthenticated()) {
+      return true;
+    }
+    
+    this.authService.redirectUrl = state.url;
+    this.router.navigate(['/login']);
+    return false;
+  }
+}</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
