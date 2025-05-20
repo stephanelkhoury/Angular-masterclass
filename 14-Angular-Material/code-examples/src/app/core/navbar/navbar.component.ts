@@ -1,17 +1,22 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { AuthService } from '../../core/services/auth.service';
+import { User } from '../../models/user.model';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-navbar',
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.scss']
 })
-export class NavbarComponent {
+export class NavbarComponent implements OnInit {
   @Input() title: string = 'Angular Material Dashboard';
   @Input() isDarkTheme: boolean = false;
   
   @Output() toggleThemeEvent = new EventEmitter<void>();
   @Output() toggleSidenavEvent = new EventEmitter<void>();
+  
+  currentUser: User | null = null;
   
   // Notifications - would typically come from a service
   notifications = [
@@ -20,7 +25,17 @@ export class NavbarComponent {
     { id: 3, message: 'Server update completed', read: true }
   ];
   
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    private authService: AuthService
+  ) {}
+  
+  ngOnInit(): void {
+    // Subscribe to the current user observable
+    this.authService.currentUser$.subscribe(user => {
+      this.currentUser = user;
+    });
+  }
   
   toggleTheme(): void {
     this.toggleThemeEvent.emit();
@@ -31,9 +46,7 @@ export class NavbarComponent {
   }
   
   logout(): void {
-    // Implement logout logic here
-    console.log('User logged out');
-    this.router.navigate(['/login']);
+    this.authService.logout();
   }
   
   markAsRead(notification: any): void {

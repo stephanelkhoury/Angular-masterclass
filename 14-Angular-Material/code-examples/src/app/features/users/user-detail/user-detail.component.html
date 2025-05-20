@@ -1,0 +1,136 @@
+<div class="user-detail-container">
+  <!-- Header with back button -->
+  <div class="header-container">
+    <button mat-icon-button (click)="goBack()" aria-label="Back to users">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <h1 class="mat-headline-4">User Details</h1>
+    <div class="spacer"></div>
+    <div class="actions">
+      <button mat-raised-button color="accent" (click)="editUser()" [disabled]="!user">
+        <mat-icon>edit</mat-icon>
+        Edit User
+      </button>
+      <button mat-raised-button color="warn" (click)="deleteUser()" [disabled]="!user">
+        <mat-icon>delete</mat-icon>
+        Delete User
+      </button>
+    </div>
+  </div>
+  
+  <!-- Loading spinner -->
+  <div class="loading-container" *ngIf="loading">
+    <mat-spinner diameter="40"></mat-spinner>
+  </div>
+  
+  <!-- Error message -->
+  <div class="error-container" *ngIf="error">
+    <mat-icon color="warn">error</mat-icon>
+    <span>{{ error }}</span>
+    <button mat-raised-button color="primary" *ngIf="error === 'Failed to load user details. Please try again later.'" (click)="loadUserDetails()">Try Again</button>
+    <button mat-raised-button color="primary" (click)="goBack()">Back to Users</button>
+  </div>
+  
+  <!-- User details content -->
+  <div class="user-details" *ngIf="user && !loading">
+    <!-- User Profile Section -->
+    <mat-card appearance="outlined" class="profile-card">
+      <mat-card-header>
+        <div class="profile-header">
+          <div class="avatar-container">
+            <img *ngIf="user.avatar" [src]="user.avatar" alt="User Avatar" class="user-avatar">
+            <mat-icon *ngIf="!user.avatar" class="default-avatar">account_circle</mat-icon>
+          </div>
+          <div class="user-name">
+            <h2>{{ user.firstName }} {{ user.lastName }}</h2>
+            <div class="user-role-status">
+              <mat-chip-option color="primary" selected>{{ user.role }}</mat-chip-option>
+              <div class="status-indicator">
+                <span class="status-dot" [style.background-color]="getStatusColor(user.status)"></span>
+                <span class="status-text">{{ user.status | titlecase }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </mat-card-header>
+      
+      <mat-card-content>
+        <div class="info-section">
+          <h3 class="section-title">Contact Information</h3>
+          <div class="info-grid" fxLayout="row wrap" fxLayoutGap="16px grid">
+            <div class="info-item" fxFlex="50%" fxFlex.xs="100%">
+              <span class="label">Email</span>
+              <span class="value">{{ user.email }}</span>
+            </div>
+            <div class="info-item" fxFlex="50%" fxFlex.xs="100%">
+              <span class="label">Phone</span>
+              <span class="value">{{ user.phone || 'Not provided' }}</span>
+            </div>
+          </div>
+        </div>
+        
+        <mat-divider></mat-divider>
+        
+        <div class="info-section" *ngIf="user.address">
+          <h3 class="section-title">Address</h3>
+          <div class="info-grid" fxLayout="row wrap" fxLayoutGap="16px grid">
+            <div class="info-item" fxFlex="50%" fxFlex.xs="100%">
+              <span class="label">Street</span>
+              <span class="value">{{ user.address.street }}</span>
+            </div>
+            <div class="info-item" fxFlex="50%" fxFlex.xs="100%">
+              <span class="label">City</span>
+              <span class="value">{{ user.address.city }}</span>
+            </div>
+            <div class="info-item" fxFlex="33.33%" fxFlex.xs="100%">
+              <span class="label">State</span>
+              <span class="value">{{ user.address.state }}</span>
+            </div>
+            <div class="info-item" fxFlex="33.33%" fxFlex.xs="100%">
+              <span class="label">Zip Code</span>
+              <span class="value">{{ user.address.zipCode }}</span>
+            </div>
+            <div class="info-item" fxFlex="33.33%" fxFlex.xs="100%">
+              <span class="label">Country</span>
+              <span class="value">{{ user.address.country }}</span>
+            </div>
+          </div>
+        </div>
+        
+        <mat-divider *ngIf="user.address"></mat-divider>
+        
+        <div class="info-section">
+          <h3 class="section-title">Account Information</h3>
+          <div class="info-grid" fxLayout="row wrap" fxLayoutGap="16px grid">
+            <div class="info-item" fxFlex="50%" fxFlex.xs="100%">
+              <span class="label">User ID</span>
+              <span class="value">{{ user.id }}</span>
+            </div>
+            <div class="info-item" fxFlex="50%" fxFlex.xs="100%">
+              <span class="label">Join Date</span>
+              <span class="value">{{ user.joinDate | date:'medium' }}</span>
+            </div>
+            <div class="info-item" fxFlex="50%" fxFlex.xs="100%">
+              <span class="label">Last Active</span>
+              <span class="value">{{ user.lastActive | date:'medium' }}</span>
+            </div>
+            <div class="info-item" fxFlex="50%" fxFlex.xs="100%">
+              <span class="label">Updated</span>
+              <span class="value">{{ user.updatedAt | date:'medium' }}</span>
+            </div>
+          </div>
+        </div>
+        
+        <mat-divider></mat-divider>
+        
+        <div class="info-section" *ngIf="user.bio">
+          <h3 class="section-title">Biography</h3>
+          <p class="user-bio">{{ user.bio }}</p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+    
+    <!-- Additional user information cards could go here -->
+    <!-- For example, activity log, permissions, etc. -->
+  </div>
+</div>

@@ -50,11 +50,27 @@
   </button>
   
   <!-- User Menu -->
-  <button mat-icon-button [matMenuTriggerFor]="userMenu" class="user-button">
-    <mat-icon>account_circle</mat-icon>
+  <div *ngIf="!currentUser">
+    <button mat-button routerLink="/login">
+      <mat-icon>login</mat-icon>
+      <span>Login</span>
+    </button>
+    <button mat-button routerLink="/register">
+      <span>Register</span>
+    </button>
+  </div>
+  
+  <button *ngIf="currentUser" mat-icon-button [matMenuTriggerFor]="userMenu" class="user-button">
+    <img *ngIf="currentUser?.avatar" [src]="currentUser.avatar" class="avatar-small" alt="User avatar">
+    <mat-icon *ngIf="!currentUser?.avatar">account_circle</mat-icon>
   </button>
   
   <mat-menu #userMenu="matMenu">
+    <div class="user-menu-header">
+      <span class="user-name">{{ currentUser?.firstName }} {{ currentUser?.lastName }}</span>
+      <span class="user-email">{{ currentUser?.email }}</span>
+    </div>
+    <mat-divider></mat-divider>
     <button mat-menu-item routerLink="/profile">
       <mat-icon>person</mat-icon>
       <span>Profile</span>

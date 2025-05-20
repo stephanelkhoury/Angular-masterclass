@@ -14,10 +14,13 @@ import { ProductDetailComponent } from './features/products/product-detail/produ
 import { ProductFormComponent } from './features/products/product-form/product-form.component';
 import { NotFoundComponent } from './shared/components/not-found/not-found.component';
 
+// Guards
+import { AuthGuard } from './core/services/auth.guard';
+
 // Routes definition
 const routes: Routes = [
   { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
-  { path: 'dashboard', component: DashboardComponent },
+  { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard] },
   
   // Auth routes
   { path: 'login', component: LoginComponent },
@@ -25,16 +28,16 @@ const routes: Routes = [
   { path: 'forgot-password', component: ForgotPasswordComponent },
   
   // User routes
-  { path: 'users', component: UserListComponent },
-  { path: 'users/new', component: UserFormComponent },
-  { path: 'users/:id', component: UserDetailComponent },
-  { path: 'users/:id/edit', component: UserFormComponent },
+  { path: 'users', component: UserListComponent, canActivate: [AuthGuard] },
+  { path: 'users/new', component: UserFormComponent, canActivate: [AuthGuard] },
+  { path: 'users/:id', component: UserDetailComponent, canActivate: [AuthGuard] },
+  { path: 'users/:id/edit', component: UserFormComponent, canActivate: [AuthGuard] },
   
   // Product routes
-  { path: 'products', component: ProductListComponent },
-  { path: 'products/new', component: ProductFormComponent },
-  { path: 'products/:id', component: ProductDetailComponent },
-  { path: 'products/:id/edit', component: ProductFormComponent },
+  { path: 'products', component: ProductListComponent, canActivate: [AuthGuard] },
+  { path: 'products/new', component: ProductFormComponent, canActivate: [AuthGuard] },
+  { path: 'products/:id', component: ProductDetailComponent, canActivate: [AuthGuard] },
+  { path: 'products/:id/edit', component: ProductFormComponent, canActivate: [AuthGuard] },
   
   // Wildcard route for 404
   { path: '**', component: NotFoundComponent }
