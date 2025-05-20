@@ -28,6 +28,12 @@ import { DataCellDirective } from './components/practical/data-grid/data-cell.di
 import { DataHeaderDirective } from './components/practical/data-grid/data-header.directive';
 import { PracticalExampleComponent } from './components/practical/practical-example.component';
 
+// Bonus Calendar Example
+import { CalendarComponent } from './components/bonus-example/calendar/calendar.component';
+import { CalendarDayDirective } from './components/bonus-example/calendar/calendar-day.directive';
+import { CalendarEventDirective } from './components/bonus-example/calendar/calendar-event.directive';
+import { BonusExampleComponent } from './components/bonus-example/bonus-example.component';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -53,7 +59,13 @@ import { PracticalExampleComponent } from './components/practical/practical-exam
     DataGridComponent,
     DataCellDirective,
     DataHeaderDirective,
-    PracticalExampleComponent
+    PracticalExampleComponent,
+    
+    // Bonus Calendar Example
+    CalendarComponent,
+    CalendarDayDirective,
+    CalendarEventDirective,
+    BonusExampleComponent
   ],
   imports: [
     BrowserModule,

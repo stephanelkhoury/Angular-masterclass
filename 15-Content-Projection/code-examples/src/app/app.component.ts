@@ -49,6 +49,14 @@ import { Component } from '@angular/core';
           </div>
           <app-practical-example></app-practical-example>
         </section>
+        
+        <!-- Bonus Content Projection Example -->
+        <section id="bonus-example">
+          <div class="example-header">
+            <h2>Bonus Example - Interactive Calendar</h2>
+          </div>
+          <app-bonus-example></app-bonus-example>
+        </section>
       </main>
     </div>
   `,
