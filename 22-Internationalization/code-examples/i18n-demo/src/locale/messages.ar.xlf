@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file source-language="en-US" target-language="ar" datatype="plaintext" original="ng2.template">
+    <body>
+      <trans-unit id="appTitle" datatype="html">
+        <source>Internationalization Demo</source>
+        <target>عرض توضيحي للتدويل</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/index.html</context>
+          <context context-type="linenumber">5</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="appName" datatype="html">
+        <source>I18n Demo</source>
+        <target>عرض توضيحي I18n</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/header/header.component.ts</context>
+          <context context-type="linenumber">8</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="navHome" datatype="html">
+        <source>Home</source>
+        <target>الصفحة الرئيسية</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/header/header.component.ts</context>
+          <context context-type="linenumber">16</context>
+        </context-group>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

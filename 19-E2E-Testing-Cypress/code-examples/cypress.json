@@ -1,0 +1,17 @@
+{
+  "integrationFolder": "cypress/e2e",
+  "testFiles": "**/*.cy.{js,ts}",
+  "supportFile": "cypress/support/e2e.ts",
+  "fixturesFolder": "cypress/fixtures",
+  "baseUrl": "http://localhost:4200",
+  "viewportWidth": 1280,
+  "viewportHeight": 720,
+  "video": true,
+  "screenshotOnRunFailure": true,
+  "defaultCommandTimeout": 5000,
+  "chromeWebSecurity": false,
+  "retries": {
+    "runMode": 1,
+    "openMode": 0
+  }
+}

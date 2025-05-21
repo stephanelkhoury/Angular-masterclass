@@ -1,0 +1,117 @@
+{
+  "NAV": {
+    "HOME": "Inicio",
+    "PRODUCTS": "Productos",
+    "DATES": "Formatos de Fecha",
+    "NUMBERS": "Formatos de Número",
+    "CONTACT": "Contáctenos",
+    "PROFILE": "Perfil de Usuario"
+  },
+  "HEADER": {
+    "CURRENT_LANG": "Idioma actual"
+  },
+  "WELCOME": {
+    "TITLE": "Bienvenido a la Internacionalización de Angular",
+    "SUBTITLE": "Aprenda a crear aplicaciones multilingües con Angular",
+    "DESCRIPTION": "Esta demostración muestra diferentes enfoques de internacionalización en aplicaciones Angular, incluidos i18n integrado y ngx-translate.",
+    "FEATURES": {
+      "TITLE": "Características demostradas en esta aplicación:",
+      "ANGULAR_I18N": "Internacionalización integrada de Angular (i18n)",
+      "NGX_TRANSLATE": "Traducción dinámica con ngx-translate",
+      "LOCALIZATION": "Localización de fechas, números y monedas",
+      "FORMATS": "Ejemplos de formatos personalizados para diferentes idiomas"
+    },
+    "BROWSE_PRODUCTS": "Explorar Productos"
+  },
+  "PRODUCTS": {
+    "TITLE": "Catálogo de Productos",
+    "DESCRIPTION": "Explore nuestra selección de productos con precios y descripciones localizados.",
+    "PRICE": "Precio",
+    "CATEGORY": "Categoría",
+    "ADD_TO_CART": "Añadir al carrito",
+    "FILTER_BY_CATEGORY": "Filtrar por categoría",
+    "ALL_CATEGORIES": "Todas las categorías",
+    "CATEGORIES": {
+      "ELECTRONICS": "Electrónica",
+      "HOME": "Hogar y Cocina",
+      "CLOTHING": "Ropa y Accesorios"
+    }
+  },
+  "DATES": {
+    "TITLE": "Ejemplos de Formato de Fecha",
+    "DESCRIPTION": "Vea cómo las fechas se formatean de manera diferente según el idioma seleccionado.",
+    "CURRENT_DATETIME": "Formatos de Fecha y Hora Actuales",
+    "SHORT_DATE": "Fecha corta",
+    "MEDIUM_DATE": "Fecha media",
+    "LONG_DATE": "Fecha larga",
+    "FULL_DATE": "Fecha completa",
+    "SHORT_TIME": "Hora corta",
+    "MEDIUM_TIME": "Hora media",
+    "FULL_DATETIME": "Fecha y hora completas",
+    "CUSTOM_FORMATS": "Formatos de Fecha Personalizados",
+    "DAY_MONTH": "Día y mes",
+    "MONTH_YEAR": "Mes y año",
+    "WEEKDAY": "Día de la semana",
+    "RELATIVE_DATES": "Fechas Relativas",
+    "YESTERDAY": "Ayer",
+    "TODAY": "Hoy",
+    "TOMORROW": "Mañana"
+  },
+  "NUMBERS": {
+    "TITLE": "Ejemplos de Formato de Números",
+    "DESCRIPTION": "Vea cómo los números, monedas y porcentajes se formatean de manera diferente según el idioma seleccionado.",
+    "BASIC_FORMATTING": "Formato Básico de Números",
+    "INTEGER": "Entero",
+    "DECIMAL": "Decimal",
+    "PERCENT": "Porcentaje",
+    "CURRENCY_FORMATTING": "Formato de Moneda",
+    "CUSTOM_FORMATS": "Formatos de Número Personalizados",
+    "NO_DECIMAL": "Sin decimales",
+    "TWO_DECIMALS": "Dos decimales",
+    "FOUR_DECIMALS": "Cuatro decimales",
+    "CUSTOM_PERCENT": "Formato de porcentaje personalizado"
+  },
+  "CONTACT": {
+    "TITLE": "Contáctenos",
+    "DESCRIPTION": "Complete el formulario a continuación para enviarnos un mensaje.",
+    "NAME": "Nombre",
+    "EMAIL": "Correo electrónico",
+    "SUBJECT": "Asunto",
+    "MESSAGE": "Mensaje",
+    "NAME_PLACEHOLDER": "Ingrese su nombre completo",
+    "EMAIL_PLACEHOLDER": "Ingrese su correo electrónico",
+    "SELECT_SUBJECT": "Seleccione un asunto",
+    "MESSAGE_PLACEHOLDER": "Ingrese su mensaje aquí",
+    "AGREE_TERMS": "Acepto los términos y condiciones",
+    "SUBMIT": "Enviar",
+    "SUBMISSION_SUCCESS": "¡Gracias! Su mensaje ha sido enviado con éxito.",
+    "SUBJECTS": {
+      "GENERAL": "Consulta General",
+      "SUPPORT": "Soporte Técnico",
+      "BILLING": "Pregunta de Facturación",
+      "FEEDBACK": "Comentarios y Sugerencias"
+    }
+  },
+  "PROFILE": {
+    "TITLE": "Perfil de Usuario",
+    "DESCRIPTION": "Vea y administre su información de perfil.",
+    "PERSONAL_INFO": "Información Personal",
+    "FULL_NAME": "Nombre completo",
+    "BIRTH_DATE": "Fecha de nacimiento",
+    "ADDRESS": "Dirección",
+    "BIO": "Biografía",
+    "LANGUAGE_PREFERENCE": "Preferencias de Idioma",
+    "CURRENT_LANGUAGE": "Su idioma actual es",
+    "CHANGE_LANGUAGE": "Cambiar idioma de visualización",
+    "LOCALE_SAVED": "Su preferencia de idioma se guardará para futuras visitas"
+  },
+  "COUNTRIES": {
+    "USA": "Estados Unidos",
+    "UK": "Reino Unido",
+    "CANADA": "Canadá",
+    "FRANCE": "Francia",
+    "GERMANY": "Alemania",
+    "SPAIN": "España",
+    "JAPAN": "Japón"
+  }
+}

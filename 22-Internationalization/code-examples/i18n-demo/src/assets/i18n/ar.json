@@ -1,0 +1,117 @@
+{
+  "NAV": {
+    "HOME": "الصفحة الرئيسية",
+    "PRODUCTS": "المنتجات",
+    "DATES": "تنسيقات التاريخ",
+    "NUMBERS": "تنسيقات الأرقام",
+    "CONTACT": "اتصل بنا",
+    "PROFILE": "الملف الشخصي"
+  },
+  "HEADER": {
+    "CURRENT_LANG": "اللغة الحالية"
+  },
+  "WELCOME": {
+    "TITLE": "مرحباً بكم في تدويل Angular",
+    "SUBTITLE": "تعلم كيفية إنشاء تطبيقات متعددة اللغات باستخدام Angular",
+    "DESCRIPTION": "يعرض هذا المثال مناهج مختلفة للتدويل في تطبيقات Angular، بما في ذلك i18n المدمج و ngx-translate.",
+    "FEATURES": {
+      "TITLE": "الميزات الموضحة في هذا التطبيق:",
+      "ANGULAR_I18N": "التدويل المدمج في Angular (i18n)",
+      "NGX_TRANSLATE": "الترجمة الديناميكية باستخدام ngx-translate",
+      "LOCALIZATION": "توطين التواريخ والأرقام والعملات",
+      "FORMATS": "أمثلة تنسيق مخصصة للغات المختلفة"
+    },
+    "BROWSE_PRODUCTS": "تصفح المنتجات"
+  },
+  "PRODUCTS": {
+    "TITLE": "كتالوج المنتجات",
+    "DESCRIPTION": "تصفح مجموعتنا من المنتجات بأسعار وأوصاف مترجمة.",
+    "PRICE": "السعر",
+    "CATEGORY": "الفئة",
+    "ADD_TO_CART": "أضف إلى السلة",
+    "FILTER_BY_CATEGORY": "تصفية حسب الفئة",
+    "ALL_CATEGORIES": "جميع الفئات",
+    "CATEGORIES": {
+      "ELECTRONICS": "الإلكترونيات",
+      "HOME": "المنزل والمطبخ",
+      "CLOTHING": "الملابس والإكسسوارات"
+    }
+  },
+  "DATES": {
+    "TITLE": "أمثلة تنسيق التاريخ",
+    "DESCRIPTION": "شاهد كيف يتم تنسيق التواريخ بشكل مختلف بناءً على اللغة المحددة.",
+    "CURRENT_DATETIME": "تنسيقات التاريخ والوقت الحالية",
+    "SHORT_DATE": "تاريخ قصير",
+    "MEDIUM_DATE": "تاريخ متوسط",
+    "LONG_DATE": "تاريخ طويل",
+    "FULL_DATE": "تاريخ كامل",
+    "SHORT_TIME": "وقت قصير",
+    "MEDIUM_TIME": "وقت متوسط",
+    "FULL_DATETIME": "تاريخ ووقت كاملين",
+    "CUSTOM_FORMATS": "تنسيقات تاريخ مخصصة",
+    "DAY_MONTH": "اليوم والشهر",
+    "MONTH_YEAR": "الشهر والسنة",
+    "WEEKDAY": "يوم الأسبوع",
+    "RELATIVE_DATES": "تواريخ نسبية",
+    "YESTERDAY": "الأمس",
+    "TODAY": "اليوم",
+    "TOMORROW": "غداً"
+  },
+  "NUMBERS": {
+    "TITLE": "أمثلة تنسيق الأرقام",
+    "DESCRIPTION": "شاهد كيف يتم تنسيق الأرقام والعملات والنسب المئوية بشكل مختلف بناءً على اللغة المحددة.",
+    "BASIC_FORMATTING": "تنسيق الأرقام الأساسي",
+    "INTEGER": "عدد صحيح",
+    "DECIMAL": "عدد عشري",
+    "PERCENT": "نسبة مئوية",
+    "CURRENCY_FORMATTING": "تنسيق العملات",
+    "CUSTOM_FORMATS": "تنسيقات أرقام مخصصة",
+    "NO_DECIMAL": "بدون منازل عشرية",
+    "TWO_DECIMALS": "منزلتان عشريتان",
+    "FOUR_DECIMALS": "أربع منازل عشرية",
+    "CUSTOM_PERCENT": "تنسيق نسبة مئوية مخصص"
+  },
+  "CONTACT": {
+    "TITLE": "اتصل بنا",
+    "DESCRIPTION": "املأ النموذج أدناه لإرسال رسالة إلينا.",
+    "NAME": "الاسم",
+    "EMAIL": "البريد الإلكتروني",
+    "SUBJECT": "الموضوع",
+    "MESSAGE": "الرسالة",
+    "NAME_PLACEHOLDER": "أدخل اسمك الكامل",
+    "EMAIL_PLACEHOLDER": "أدخل عنوان بريدك الإلكتروني",
+    "SELECT_SUBJECT": "اختر موضوعاً",
+    "MESSAGE_PLACEHOLDER": "أدخل رسالتك هنا",
+    "AGREE_TERMS": "أوافق على الشروط والأحكام",
+    "SUBMIT": "إرسال",
+    "SUBMISSION_SUCCESS": "شكراً لك! تم إرسال رسالتك بنجاح.",
+    "SUBJECTS": {
+      "GENERAL": "استفسار عام",
+      "SUPPORT": "دعم فني",
+      "BILLING": "سؤال عن الفواتير",
+      "FEEDBACK": "تعليقات واقتراحات"
+    }
+  },
+  "PROFILE": {
+    "TITLE": "الملف الشخصي",
+    "DESCRIPTION": "عرض وإدارة معلومات ملفك الشخصي.",
+    "PERSONAL_INFO": "المعلومات الشخصية",
+    "FULL_NAME": "الاسم الكامل",
+    "BIRTH_DATE": "تاريخ الميلاد",
+    "ADDRESS": "العنوان",
+    "BIO": "السيرة الذاتية",
+    "LANGUAGE_PREFERENCE": "تفضيلات اللغة",
+    "CURRENT_LANGUAGE": "لغتك الحالية هي",
+    "CHANGE_LANGUAGE": "تغيير لغة العرض",
+    "LOCALE_SAVED": "سيتم حفظ تفضيل اللغة الخاص بك للزيارات المستقبلية"
+  },
+  "COUNTRIES": {
+    "USA": "الولايات المتحدة الأمريكية",
+    "UK": "المملكة المتحدة",
+    "CANADA": "كندا",
+    "FRANCE": "فرنسا",
+    "GERMANY": "ألمانيا",
+    "SPAIN": "إسبانيا",
+    "JAPAN": "اليابان"
+  }
+}
