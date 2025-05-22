@@ -1,0 +1,101 @@
+<div class="header-container">
+  <mat-toolbar color="primary">
+    <div class="toolbar-left">
+      <button mat-icon-button class="menu-button" aria-label="Toggle menu" (click)="toggleMobileMenu()" fxShow="true" fxHide.gt-sm>
+        <mat-icon>menu</mat-icon>
+      </button>
+      <a routerLink="/" class="logo">
+        <span>EShop</span>
+      </a>
+      
+      <!-- Desktop Navigation -->
+      <nav class="desktop-nav" fxShow="true" fxHide.lt-md>
+        <a mat-button routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Home</a>
+        <a mat-button routerLink="/products" routerLinkActive="active">Products</a>
+        <a mat-button routerLink="/about" routerLinkActive="active">About</a>
+        <a mat-button routerLink="/contact" routerLinkActive="active">Contact</a>
+      </nav>
+    </div>
+    
+    <div class="toolbar-right">
+      <button mat-icon-button aria-label="Search" class="search-button">
+        <mat-icon>search</mat-icon>
+      </button>
+      
+      <a mat-icon-button routerLink="/cart" aria-label="Shopping cart" class="cart-button">
+        <mat-icon matBadge="{{(cartItemCount$ | async) || 0}}" [matBadgeHidden]="(cartItemCount$ | async) === 0" matBadgeColor="accent">shopping_cart</mat-icon>
+      </a>
+      
+      <!-- User menu -->
+      <ng-container *ngIf="(isLoggedIn$ | async); else loginButton">
+        <button mat-button [matMenuTriggerFor]="userMenu" class="user-menu-button">
+          <mat-icon>account_circle</mat-icon>
+          {{ (currentUser$ | async)?.firstName }}
+        </button>
+        <mat-menu #userMenu="matMenu">
+          <a mat-menu-item routerLink="/profile">
+            <mat-icon>person</mat-icon>
+            <span>Profile</span>
+          </a>
+          <a mat-menu-item routerLink="/orders">
+            <mat-icon>list_alt</mat-icon>
+            <span>Orders</span>
+          </a>
+          <a mat-menu-item routerLink="/wishlist">
+            <mat-icon>favorite</mat-icon>
+            <span>Wishlist</span>
+          </a>
+          <ng-container *ngIf="(isAdmin$ | async)">
+            <mat-divider></mat-divider>
+            <a mat-menu-item routerLink="/admin">
+              <mat-icon>admin_panel_settings</mat-icon>
+              <span>Admin</span>
+            </a>
+          </ng-container>
+          <mat-divider></mat-divider>
+          <button mat-menu-item (click)="logout()">
+            <mat-icon>exit_to_app</mat-icon>
+            <span>Logout</span>
+          </button>
+        </mat-menu>
+      </ng-container>
+      
+      <ng-template #loginButton>
+        <a mat-button routerLink="/auth/login">
+          <mat-icon>login</mat-icon>
+          <span class="login-text">Login</span>
+        </a>
+      </ng-template>
+    </div>
+  </mat-toolbar>
+  
+  <!-- Mobile Navigation Menu -->
+  <div class="mobile-menu" [class.open]="mobileMenuOpen">
+    <mat-nav-list>
+      <a mat-list-item routerLink="/" (click)="toggleMobileMenu()">
+        <mat-icon>home</mat-icon>
+        <span>Home</span>
+      </a>
+      <a mat-list-item routerLink="/products" (click)="toggleMobileMenu()">
+        <mat-icon>store</mat-icon>
+        <span>Products</span>
+      </a>
+      <a mat-list-item routerLink="/about" (click)="toggleMobileMenu()">
+        <mat-icon>info</mat-icon>
+        <span>About</span>
+      </a>
+      <a mat-list-item routerLink="/contact" (click)="toggleMobileMenu()">
+        <mat-icon>email</mat-icon>
+        <span>Contact</span>
+      </a>
+      <mat-divider></mat-divider>
+      <ng-container *ngIf="(isAdmin$ | async)">
+        <a mat-list-item routerLink="/admin" (click)="toggleMobileMenu()">
+          <mat-icon>admin_panel_settings</mat-icon>
+          <span>Admin Dashboard</span>
+        </a>
+      </ng-container>
+    </mat-nav-list>
+    <div class="mobile-menu-backdrop" (click)="toggleMobileMenu()"></div>
+  </div>
+</div>

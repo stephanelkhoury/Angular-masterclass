@@ -1,0 +1,81 @@
+<div class="products-page">
+  <!-- Loading Spinner -->
+  <app-loading-spinner *ngIf="loading$ | async" [overlay]="true"></app-loading-spinner>
+  
+  <div class="container">
+    <!-- Page Header -->
+    <div class="page-header">
+      <h1 class="page-title">Shop Products</h1>
+      
+      <!-- Search Bar -->
+      <div class="search-container">
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-label>Search products</mat-label>
+          <input matInput [formControl]="searchControl" placeholder="Search by name, category or description">
+          <button *ngIf="searchControl.value" matSuffix mat-icon-button aria-label="Clear" (click)="searchControl.setValue('')">
+            <mat-icon>close</mat-icon>
+          </button>
+          <mat-icon matSuffix>search</mat-icon>
+        </mat-form-field>
+      </div>
+    </div>
+    
+    <div class="products-layout">
+      <!-- Sidebar / Filters -->
+      <aside class="filters-sidebar">
+        <!-- Category Menu -->
+        <app-category-menu 
+          [categories]="categories$ | async" 
+          [selectedCategory]="filters.category"
+          (categorySelected)="onCategoryChange($event)">
+        </app-category-menu>
+        
+        <!-- Product Filters -->
+        <app-product-filters
+          [minPrice]="filters.minPrice"
+          [maxPrice]="filters.maxPrice"
+          [rating]="filters.rating"
+          (priceRangeChanged)="onPriceRangeChange($event)"
+          (ratingChanged)="onRatingChange($event)">
+        </app-product-filters>
+        
+        <!-- Reset Filters Button -->
+        <div class="reset-filters">
+          <button mat-stroked-button color="primary" (click)="resetFilters()">
+            <mat-icon>refresh</mat-icon>
+            Reset Filters
+          </button>
+        </div>
+      </aside>
+      
+      <!-- Products Content -->
+      <div class="products-content">
+        <!-- Toolbar with sort and view options -->
+        <div class="products-toolbar">
+          <app-product-sort 
+            [currentSort]="filters.sort"
+            (sortChanged)="onSortChange($event)">
+          </app-product-sort>
+          
+          <div class="view-options">
+            <button mat-icon-button [class.active]="viewMode === 'grid'" (click)="onViewModeChange('grid')">
+              <mat-icon>grid_view</mat-icon>
+            </button>
+            <button mat-icon-button [class.active]="viewMode === 'list'" (click)="onViewModeChange('list')">
+              <mat-icon>view_list</mat-icon>
+            </button>
+          </div>
+        </div>
+        
+        <!-- Products Grid -->
+        <app-product-grid
+          [products]="filteredProducts$ | async"
+          [viewMode]="viewMode"
+          (addToCart)="onAddToCart($event)"
+          (addToWishlist)="onAddToWishlist($event)"
+          (viewDetails)="onViewDetails($event)">
+        </app-product-grid>
+      </div>
+    </div>
+  </div>
+</div>
