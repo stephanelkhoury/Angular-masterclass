@@ -1,0 +1,108 @@
+// Custom Theming for Angular Material
+@use '@angular/material' as mat;
+
+// Include the common styles for Angular Material
+@include mat.core();
+
+// Define the palettes for your theme
+$primary-palette: mat.define-palette(mat.$indigo-palette, 500);
+$accent-palette: mat.define-palette(mat.$pink-palette, A200, A100, A400);
+$warn-palette: mat.define-palette(mat.$red-palette);
+
+// Create the theme object (a Sass map containing all of the palettes)
+$light-theme: mat.define-light-theme((
+  color: (
+    primary: $primary-palette,
+    accent: $accent-palette,
+    warn: $warn-palette,
+  ),
+  typography: mat.define-typography-config(),
+  density: 0,
+));
+
+// Optional: Create a dark theme version
+$dark-theme: mat.define-dark-theme((
+  color: (
+    primary: $primary-palette,
+    accent: $accent-palette,
+    warn: $warn-palette,
+  ),
+  typography: mat.define-typography-config(),
+  density: 0,
+));
+
+// Apply the light theme by default
+@include mat.all-component-themes($light-theme);
+
+// Apply the dark theme when class "dark-theme" is present on body
+.dark-theme {
+  @include mat.all-component-colors($dark-theme);
+  
+  // Custom dark theme styles
+  background-color: #303030;
+  color: white;
+}
+
+// Custom material component styles
+.mat-mdc-card {
+  margin-bottom: 16px;
+}
+
+.full-width {
+  width: 100%;
+}
+
+// Material Elevation utility classes
+@for $z from 1 through 24 {
+  .mat-elevation-z#{$z} {
+    @include mat.elevation($z);
+  }
+}
+
+// Custom typography styles
+.title {
+  font-size: 2rem;
+  font-weight: 500;
+  margin-bottom: 1rem;
+}
+
+.subtitle {
+  font-size: 1.5rem;
+  font-weight: 400;
+  margin-bottom: 0.75rem;
+}
+
+// Custom spacing utilities
+.m-1 { margin: 8px; }
+.m-2 { margin: 16px; }
+.m-3 { margin: 24px; }
+.m-4 { margin: 32px; }
+
+.p-1 { padding: 8px; }
+.p-2 { padding: 16px; }
+.p-3 { padding: 24px; }
+.p-4 { padding: 32px; }
+
+// Custom layout styles
+.layout-container {
+  padding: 16px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.flex-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+// Custom card styles
+.dashboard-card {
+  min-height: 150px;
+}
+
+// Custom form styles
+.form-container {
+  max-width: 600px;
+  margin: 0 auto;
+}

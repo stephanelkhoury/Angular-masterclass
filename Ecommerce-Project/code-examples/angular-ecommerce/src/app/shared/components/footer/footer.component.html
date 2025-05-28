@@ -1,0 +1,196 @@
+<!-- Modern Footer Component -->
+<footer class="footer">
+  <div class="footer-content">
+    <!-- Newsletter Section -->
+    <section class="newsletter-section">
+      <div class="container">
+        <div class="newsletter-content">
+          <div class="newsletter-text">
+            <h3>Stay Updated</h3>
+            <p>Subscribe to our newsletter and get the latest deals and updates delivered to your inbox.</p>
+          </div>
+          <div class="newsletter-form">
+            <form (ngSubmit)="subscribeNewsletter()" class="newsletter-form-wrapper">
+              <div class="input-group">
+                <input 
+                  type="email" 
+                  [(ngModel)]="newsletterEmail"
+                  name="newsletterEmail"
+                  placeholder="Enter your email address"
+                  class="newsletter-input"
+                  [disabled]="isSubscribing"
+                  required>
+                <button 
+                  type="submit"
+                  class="newsletter-button"
+                  [disabled]="isSubscribing || !newsletterEmail">
+                  <span *ngIf="!isSubscribing">Subscribe</span>
+                  <span *ngIf="isSubscribing" class="loading-text">
+                    <mat-spinner diameter="16"></mat-spinner>
+                    Subscribing...
+                  </span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Main Footer Content -->
+    <section class="main-footer">
+      <div class="container">
+        <div class="footer-grid">
+          <!-- Company Information -->
+          <div class="footer-column company-info">
+            <div class="footer-logo">
+              <h3>ShopEasy</h3>
+            </div>
+            <p class="company-description">
+              Your trusted online shopping destination for quality products at unbeatable prices. 
+              We're committed to providing exceptional customer service and a seamless shopping experience.
+            </p>
+            <div class="contact-info">
+              <div class="contact-item">
+                <mat-icon>location_on</mat-icon>
+                <span>123 Commerce Street, Shopping District, City 12345</span>
+              </div>
+              <div class="contact-item">
+                <mat-icon>phone</mat-icon>
+                <span>+1 (555) 123-4567</span>
+              </div>
+              <div class="contact-item">
+                <mat-icon>email</mat-icon>
+                <span>support&#64;shopeasy.com</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Links -->
+          <div class="footer-column">
+            <h4>Quick Links</h4>
+            <ul class="footer-links">
+              <li><a routerLink="/products">All Products</a></li>
+              <li><a routerLink="/categories">Categories</a></li>
+              <li><a routerLink="/deals">Special Deals</a></li>
+              <li><a routerLink="/new-arrivals">New Arrivals</a></li>
+              <li><a routerLink="/bestsellers">Best Sellers</a></li>
+              <li><a routerLink="/brands">Brands</a></li>
+            </ul>
+          </div>
+
+          <!-- Customer Service -->
+          <div class="footer-column">
+            <h4>Customer Service</h4>
+            <ul class="footer-links">
+              <li><a routerLink="/help">Help Center</a></li>
+              <li><a routerLink="/contact">Contact Us</a></li>
+              <li><a routerLink="/shipping">Shipping Info</a></li>
+              <li><a routerLink="/returns">Returns & Exchanges</a></li>
+              <li><a routerLink="/size-guide">Size Guide</a></li>
+              <li><a routerLink="/track-order">Track Your Order</a></li>
+            </ul>
+          </div>
+
+          <!-- About & Legal -->
+          <div class="footer-column">
+            <h4>About & Legal</h4>
+            <ul class="footer-links">
+              <li><a routerLink="/about">About Us</a></li>
+              <li><a routerLink="/careers">Careers</a></li>
+              <li><a routerLink="/privacy">Privacy Policy</a></li>
+              <li><a routerLink="/terms">Terms of Service</a></li>
+              <li><a routerLink="/accessibility">Accessibility</a></li>
+              <li><a routerLink="/sitemap">Sitemap</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features-section">
+      <div class="container">
+        <div class="features-grid">
+          <div class="feature-item">
+            <mat-icon>local_shipping</mat-icon>
+            <div class="feature-content">
+              <h5>Free Shipping</h5>
+              <p>On orders over $50</p>
+            </div>
+          </div>
+          <div class="feature-item">
+            <mat-icon>security</mat-icon>
+            <div class="feature-content">
+              <h5>Secure Payment</h5>
+              <p>100% secure transactions</p>
+            </div>
+          </div>
+          <div class="feature-item">
+            <mat-icon>support_agent</mat-icon>
+            <div class="feature-content">
+              <h5>24/7 Support</h5>
+              <p>Dedicated customer service</p>
+            </div>
+          </div>
+          <div class="feature-item">
+            <mat-icon>autorenew</mat-icon>
+            <div class="feature-content">
+              <h5>Easy Returns</h5>
+              <p>30-day return policy</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Bottom Footer -->
+    <section class="bottom-footer">
+      <div class="container">
+        <div class="bottom-footer-content">
+          <div class="copyright">
+            <p>&copy; {{ currentYear }} ShopEasy. All rights reserved.</p>
+          </div>
+          
+          <div class="payment-methods">
+            <span class="payment-label">We Accept:</span>
+            <div class="payment-icons">
+              <div class="payment-icon visa">VISA</div>
+              <div class="payment-icon mastercard">MC</div>
+              <div class="payment-icon amex">AMEX</div>
+              <div class="payment-icon paypal">PayPal</div>
+              <div class="payment-icon apple-pay">Apple Pay</div>
+            </div>
+          </div>
+          
+          <div class="social-links">
+            <a href="#" class="social-link" aria-label="Facebook">
+              <mat-icon>facebook</mat-icon>
+            </a>
+            <a href="#" class="social-link" aria-label="Twitter">
+              <mat-icon>twitter</mat-icon>
+            </a>
+            <a href="#" class="social-link" aria-label="Instagram">
+              <mat-icon>instagram</mat-icon>
+            </a>
+            <a href="#" class="social-link" aria-label="LinkedIn">
+              <mat-icon>linkedin</mat-icon>
+            </a>
+            <a href="#" class="social-link" aria-label="YouTube">
+              <mat-icon>youtube</mat-icon>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Back to Top Button -->
+  <button 
+    class="back-to-top"
+    [class.visible]="showBackToTop"
+    (click)="scrollToTop()"
+    aria-label="Back to top">
+    <mat-icon>keyboard_arrow_up</mat-icon>
+  </button>
+</footer>

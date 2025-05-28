@@ -1,0 +1,1 @@
+{"ast":null,"code":"import { createReducer } from '@ngrx/store';\nexport const initialState = {\n  products: [],\n  selectedProduct: null,\n  loading: false,\n  error: null\n};\nexport const reducer = createReducer(initialState\n// Add actions later\n);","map":null,"metadata":{},"sourceType":"module","externalDependencies":[]}

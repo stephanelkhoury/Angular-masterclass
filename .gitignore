@@ -1,0 +1,48 @@
+# Dependencies
+/node_modules
+
+# Build output
+/dist
+/build
+/tmp
+
+# Large media files
+*.mp4
+*.mov
+*.avi
+*.wmv
+*.zip
+*.tar.gz
+*.rar
+
+# Log files
+*.log
+/logs
+npm-debug.log*
+
+# Environment files
+.env
+.env.local
+
+# IDE
+.idea/
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+.vscode/*
+
+# Misc
+/.sass-cache
+/connect.lock
+/coverage
+/libpeerconnection.log
+yarn-error.log
+testem.log
+/typings
+
+# System Files
+.DS_Store
+Thumbs.db

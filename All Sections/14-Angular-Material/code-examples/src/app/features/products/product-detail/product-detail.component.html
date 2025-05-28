@@ -1,0 +1,89 @@
+<div class="product-detail-container">
+  <!-- Loading spinner -->
+  <div class="loading-container" *ngIf="loading">
+    <mat-spinner diameter="40"></mat-spinner>
+  </div>
+  
+  <!-- Error message -->
+  <div class="error-container" *ngIf="error">
+    <mat-icon color="warn">error</mat-icon>
+    <span>{{ error }}</span>
+    <button mat-raised-button color="primary" (click)="goBack()">Go Back</button>
+  </div>
+  
+  <div class="product-content" *ngIf="product && !loading && !error">
+    <mat-card class="mat-elevation-z4">
+      <div class="product-header">
+        <button mat-icon-button color="primary" matTooltip="Back to Products" (click)="goBack()">
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+        <div class="header-content">
+          <h1 class="mat-headline-4">{{ product.name }}</h1>
+          <div class="product-id">SKU: {{ product.sku }}</div>
+        </div>
+        <div class="spacer"></div>
+        <div class="actions">
+          <button mat-raised-button color="accent" (click)="editProduct()">
+            <mat-icon>edit</mat-icon>
+            Edit
+          </button>
+          <button mat-raised-button color="warn" (click)="deleteProduct()">
+            <mat-icon>delete</mat-icon>
+            Delete
+          </button>
+        </div>
+      </div>
+      
+      <mat-divider></mat-divider>
+      
+      <div class="product-body">
+        <div class="product-image-section">
+          <img [src]="product.imageUrl" alt="{{ product.name }}" class="product-image">
+          <div class="product-meta">
+            <mat-chip-option [color]="'primary'" selected>{{ product.category }}</mat-chip-option>
+            <span class="meta-item" *ngIf="product.featured">
+              <mat-icon class="featured-icon" color="accent">star</mat-icon>
+              Featured
+            </span>
+          </div>
+        </div>
+        
+        <div class="product-info-section">
+          <div class="product-price" [innerHTML]="getDisplayPrice()"></div>
+          
+          <div class="stock-indicator">
+            <span class="stock-dot" [ngClass]="getStockStatusClass()"></span>
+            <span class="stock-text">{{ product.stock }} - {{ getStockStatusText() }}</span>
+          </div>
+          
+          <mat-divider></mat-divider>
+          
+          <h2 class="mat-title">Product Description</h2>
+          <p class="product-description">{{ product.description }}</p>
+          
+          <mat-divider></mat-divider>
+          
+          <div class="product-details">
+            <div class="detail-item">
+              <span class="label">Rating:</span>
+              <span class="value">
+                {{ product.rating }} / 5
+                <span class="reviews">({{ product.reviews }} reviews)</span>
+              </span>
+            </div>
+            
+            <div class="detail-item">
+              <span class="label">Created:</span>
+              <span class="value">{{ getFormattedDate(product.createdAt) }}</span>
+            </div>
+            
+            <div class="detail-item">
+              <span class="label">Last Updated:</span>
+              <span class="value">{{ getFormattedDate(product.updatedAt) }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </mat-card>
+  </div>
+</div>

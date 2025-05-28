@@ -1,0 +1,146 @@
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { BehaviorSubject, Observable, throwError, of } from 'rxjs';
+import { map, catchError, tap } from 'rxjs/operators';
+
+import { CartItem } from '../models/cart-item.model';
+import { NotificationService } from './notification.service';
+import { StorageService } from './storage.service';
+import { AuthService } from './auth.service';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class CartService {
+  private apiUrl = '/api/cart';
+  private cartItemsSubject = new BehaviorSubject<CartItem[]>([]);
+  
+  cartItems$ = this.cartItemsSubject.asObservable();
+
+  constructor(
+    private http: HttpClient,
+    private authService: AuthService,
+    private storageService: StorageService,
+    private notificationService: NotificationService
+  ) {
+    this.loadCart();
+  }
+
+  loadCart(): void {
+    // If user is logged in, get cart from API, otherwise from localStorage
+    if (this.authService.isAuthenticated()) {
+      this.getCart().subscribe(
+        items => this.cartItemsSubject.next(items),
+        error => {
+          console.error('Error loading cart', error);
+          this.notificationService.showError('Failed to load cart');
+          this.loadFromLocalStorage();
+        }
+      );
+    } else {
+      this.loadFromLocalStorage();
+    }
+  }
+
+  private loadFromLocalStorage(): void {
+    const localCart = this.storageService.getItem('cart');
+    if (localCart) {
+      try {
+        const cartItems = JSON.parse(localCart);
+        this.cartItemsSubject.next(cartItems);
+      } catch (e) {
+        console.error('Error parsing cart from localStorage', e);
+        this.cartItemsSubject.next([]);
+      }
+    } else {
+      this.cartItemsSubject.next([]);
+    }
+  }
+
+  getCart(): Observable<CartItem[]> {
+    return this.http.get<CartItem[]>(`${this.apiUrl}`).pipe(
+      catchError(error => {
+        console.error('Error fetching cart', error);
+        return throwError(() => new Error('Failed to fetch cart'));
+      })
+    );
+  }
+
+  syncCart(items: CartItem[]): Observable<any> {
+    return this.http.post(`${this.apiUrl}/sync`, { items }).pipe(
+      catchError(error => {
+        console.error('Error syncing cart', error);
+        return throwError(() => new Error('Failed to sync cart'));
+      })
+    );
+  }
+
+  clearCart(): Observable<any> {
+    this.cartItemsSubject.next([]);
+    if (this.authService.isAuthenticated()) {
+      return this.http.delete(`${this.apiUrl}`).pipe(
+        catchError(error => {
+          console.error('Error clearing cart', error);
+          return throwError(() => new Error('Failed to clear cart'));
+        })
+      );
+    }
+    return of(null);
+  }
+
+  addToCart(product: any, quantity: number): void {
+    const currentItems = this.cartItemsSubject.value;
+    const existingItemIndex = currentItems.findIndex(item => item.productId === product.id);
+    
+    let updatedItems: CartItem[];
+
+    if (existingItemIndex >= 0) {
+      updatedItems = [...currentItems];
+      updatedItems[existingItemIndex] = {
+        ...updatedItems[existingItemIndex],
+        quantity: updatedItems[existingItemIndex].quantity + quantity
+      };
+    } else {
+      const newItem: CartItem = {
+        productId: product.id,
+        name: product.name,
+        price: product.price,
+        image: product.images[0] || product.imageUrl,
+        quantity
+      };
+      updatedItems = [...currentItems, newItem];
+    }
+
+    this.cartItemsSubject.next(updatedItems);
+    this.saveCart(updatedItems);
+  }
+
+  removeFromCart(productId: string): void {
+    const currentItems = this.cartItemsSubject.value;
+    const updatedItems = currentItems.filter(item => item.productId !== productId);
+    
+    this.cartItemsSubject.next(updatedItems);
+    this.saveCart(updatedItems);
+  }
+
+  updateQuantity(productId: string, quantity: number): void {
+    const currentItems = this.cartItemsSubject.value;
+    const updatedItems = currentItems.map(item => 
+      item.productId === productId ? { ...item, quantity } : item
+    );
+    
+    this.cartItemsSubject.next(updatedItems);
+    this.saveCart(updatedItems);
+  }
+
+  private saveCart(items: CartItem[]): void {
+    this.storageService.setItem('cart', JSON.stringify(items));
+    
+    if (this.authService.isAuthenticated()) {
+      this.syncCart(items).subscribe(
+        () => {},
+        error => console.error('Error syncing cart with server', error)
+      );
+    }
+  }
+}

@@ -1,0 +1,28 @@
+<!-- Modern Header Component -->
+<app-header></app-header>
+
+<!-- Main Application Layout -->
+<div class="app-layout">
+  <!-- Content Area -->
+  <main class="main-content" role="main">
+    <!-- Router outlet for dynamic content -->
+    <router-outlet></router-outlet>
+    
+    <!-- Loading overlay for app-wide operations -->
+    <app-loading-spinner *ngIf="isLoading$ | async" [overlay]="true"></app-loading-spinner>
+  </main>
+</div>
+
+<!-- Modern Footer Component -->
+<app-footer></app-footer>
+
+<!-- Back to top button -->
+<button 
+  class="back-to-top" 
+  [class.visible]="showBackToTop"
+  (click)="scrollToTop()"
+  aria-label="Back to top"
+  mat-fab
+  color="primary">
+  <mat-icon>keyboard_arrow_up</mat-icon>
+</button>

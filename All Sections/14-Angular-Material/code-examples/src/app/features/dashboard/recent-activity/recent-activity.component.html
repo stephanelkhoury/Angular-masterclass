@@ -1,0 +1,29 @@
+<mat-card appearance="outlined" class="activity-card">
+  <mat-card-header>
+    <mat-card-title>Recent Activity</mat-card-title>
+    <div class="spacer"></div>
+    <button mat-button color="primary">View All</button>
+  </mat-card-header>
+  
+  <mat-card-content>
+    <mat-list>
+      <mat-list-item *ngFor="let activity of activities" class="activity-item">
+        <img matListItemAvatar [src]="activity.avatar || 'assets/images/avatar-placeholder.png'" alt="User avatar" class="activity-avatar">
+        <div matListItemTitle>
+          <span class="activity-user">{{ activity.user }}</span>
+          <span class="activity-action">{{ activity.action }}</span>
+          <span class="activity-object">{{ activity.object }}</span>
+        </div>
+        <div matListItemLine class="activity-time">
+          {{ getTimeAgo(activity.time) }}
+        </div>
+      </mat-list-item>
+      
+      <mat-divider *ngIf="activities.length === 0"></mat-divider>
+      <div *ngIf="activities.length === 0" class="no-activities">
+        <mat-icon>history</mat-icon>
+        <p>No recent activities</p>
+      </div>
+    </mat-list>
+  </mat-card-content>
+</mat-card>

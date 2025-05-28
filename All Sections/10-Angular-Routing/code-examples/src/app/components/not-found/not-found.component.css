@@ -1,0 +1,65 @@
+/* 404 Not Found Component Styles */
+.not-found-container {
+  text-align: center;
+  padding: 4rem 2rem;
+  min-height: 60vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.error-code {
+  font-size: 8rem;
+  font-weight: bold;
+  color: #1976d2;
+  margin: 0;
+  line-height: 1;
+}
+
+.error-title {
+  font-size: 2rem;
+  color: #333;
+  margin: 1rem 0;
+}
+
+.error-message {
+  font-size: 1.1rem;
+  color: #666;
+  margin-bottom: 2rem;
+  max-width: 500px;
+}
+
+.btn-home {
+  background-color: #1976d2;
+  color: white;
+  text-decoration: none;
+  padding: 1rem 2rem;
+  border-radius: 4px;
+  font-size: 1rem;
+  transition: background-color 0.3s;
+  display: inline-block;
+}
+
+.btn-home:hover {
+  background-color: #1565c0;
+}
+
+.error-illustration {
+  margin-bottom: 2rem;
+  opacity: 0.8;
+}
+
+@media (max-width: 768px) {
+  .error-code {
+    font-size: 5rem;
+  }
+  
+  .error-title {
+    font-size: 1.5rem;
+  }
+  
+  .not-found-container {
+    padding: 2rem 1rem;
+  }
+}

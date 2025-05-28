@@ -1,0 +1,40 @@
+<div class="task-item" [class.completed]="task.completed">
+  <div class="task-content">
+    <div class="task-checkbox">
+      <input 
+        type="checkbox" 
+        [checked]="task.completed" 
+        (click)="toggle.emit()">
+    </div>
+    
+    <div class="task-details" (click)="select.emit()">
+      <div class="task-title">
+        {{ task.title }}
+        <span class="priority-badge" [ngClass]="getPriorityClass(task.priority)">
+          {{ task.priority }}
+        </span>
+      </div>
+      
+      <div class="task-description" *ngIf="task.description">
+        {{ task.description }}
+      </div>
+      
+      <div class="task-meta">
+        <div class="task-date">
+          <span *ngIf="task.dueDate">Due: {{ task.dueDate | date:'short' }}</span>
+          <span *ngIf="!task.dueDate">Created: {{ task.createdAt | date:'short' }}</span>
+        </div>
+        
+        <div class="task-tags" *ngIf="task.tags && task.tags.length">
+          <span class="tag" *ngFor="let tag of task.tags">{{ tag }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="task-actions">
+    <button class="delete-btn" (click)="delete.emit()">
+      Delete
+    </button>
+  </div>
+</div>

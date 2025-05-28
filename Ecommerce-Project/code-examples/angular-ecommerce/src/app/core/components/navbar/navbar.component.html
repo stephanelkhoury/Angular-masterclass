@@ -1,0 +1,216 @@
+<header class="navbar-wrapper">
+  <!-- Top Announcement Bar -->
+  <div class="announcement-bar">
+    <div class="container">
+      <div class="announcement-content">
+        <div class="announcement-slider">
+          <p>Free shipping on orders over $50 | Get 20% off your first purchase with code: WELCOME20</p>
+        </div>
+        <div class="top-links">
+          <a href="#" class="top-link">Store Locator</a>
+          <a href="#" class="top-link">Help</a>
+          <a href="#" class="top-link">Track Order</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Navigation -->
+  <nav class="main-nav" [class.nav-scrolled]="isScrolled">
+    <div class="container">
+      <div class="nav-content">
+        <!-- Logo -->
+        <div class="logo-container">
+          <a routerLink="/" class="logo">
+            <img src="https://cdn.pixabay.com/photo/2017/03/16/21/18/logo-2150297_960_720.png" alt="ShopNow Logo">
+          </a>
+          <span class="logo-text">ShopNow</span>
+        </div>
+
+        <!-- Desktop Navigation Menu -->
+        <div class="nav-menu" [class.nav-active]="isMenuOpen">
+          <ul class="nav-list">
+            <li class="nav-item" [class.active]="activeRoute === 'home'">
+              <a routerLink="/" class="nav-link">Home</a>
+            </li>
+            <li class="nav-item dropdown" [class.active]="activeRoute === 'shop'" [class.dropdown-open]="activeDropdown === 'shop'">
+              <a routerLink="/shop" class="nav-link" (mouseenter)="toggleDropdown('shop')">Shop</a>
+              <div class="mega-dropdown">
+                <div class="mega-dropdown-content">
+                  <div class="dropdown-section">
+                    <h3 class="dropdown-title">Categories</h3>
+                    <ul class="dropdown-list">
+                      <li><a routerLink="/shop/clothing">Clothing</a></li>
+                      <li><a routerLink="/shop/shoes">Shoes</a></li>
+                      <li><a routerLink="/shop/accessories">Accessories</a></li>
+                      <li><a routerLink="/shop/jewelry">Jewelry</a></li>
+                      <li><a routerLink="/shop/beauty">Beauty</a></li>
+                    </ul>
+                  </div>
+                  <div class="dropdown-section">
+                    <h3 class="dropdown-title">Collections</h3>
+                    <ul class="dropdown-list">
+                      <li><a routerLink="/shop/new-arrivals">New Arrivals</a></li>
+                      <li><a routerLink="/shop/bestsellers">Bestsellers</a></li>
+                      <li><a routerLink="/shop/trending">Trending Now</a></li>
+                      <li><a routerLink="/shop/sale">Sale</a></li>
+                    </ul>
+                  </div>
+                  <div class="dropdown-featured">
+                    <div class="featured-image">
+                      <img src="https://images.unsplash.com/photo-1483985988355-763728e1935b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80" alt="Featured Collection">
+                      <div class="featured-overlay">
+                        <h4>Summer Collection</h4>
+                        <p>Discover the latest trends</p>
+                        <a routerLink="/shop/summer" class="featured-btn">Shop Now</a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </li>
+            <li class="nav-item" [class.active]="activeRoute === 'deals'">
+              <a routerLink="/deals" class="nav-link">Deals</a>
+            </li>
+            <li class="nav-item" [class.active]="activeRoute === 'about'">
+              <a routerLink="/about" class="nav-link">About Us</a>
+            </li>
+            <li class="nav-item" [class.active]="activeRoute === 'contact'">
+              <a routerLink="/contact" class="nav-link">Contact</a>
+            </li>
+          </ul>
+
+          <!-- Mobile Nav Close Button -->
+          <button class="nav-close" (click)="toggleMenu()">
+            <i class="fa-solid fa-times"></i>
+          </button>
+        </div>
+
+        <!-- Search and User Actions -->
+        <div class="nav-actions">
+          <div class="search-container">
+            <button class="action-btn search-toggle" (click)="toggleSearch()">
+              <i class="fa-solid fa-search"></i>
+            </button>
+            <div class="search-dropdown" [class.active]="isSearchOpen">
+              <form class="search-form">
+                <input type="text" placeholder="Search for products..." class="search-input">
+                <button type="submit" class="search-submit">
+                  <i class="fa-solid fa-search"></i>
+                </button>
+              </form>
+              <div class="search-suggestions">
+                <h4>Popular Searches</h4>
+                <div class="suggestion-tags">
+                  <a href="#" class="tag">Summer Dresses</a>
+                  <a href="#" class="tag">Sneakers</a>
+                  <a href="#" class="tag">Sunglasses</a>
+                  <a href="#" class="tag">Backpacks</a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <button class="action-btn" routerLink="/account">
+            <i class="fa-solid fa-user"></i>
+          </button>
+
+          <button class="action-btn" routerLink="/wishlist">
+            <i class="fa-solid fa-heart"></i>
+            <span class="action-badge">3</span>
+          </button>
+
+          <button class="action-btn cart-btn" (click)="toggleCart()">
+            <i class="fa-solid fa-shopping-cart"></i>
+            <span class="action-badge">2</span>
+          </button>
+          
+          <!-- Mobile Menu Toggle -->
+          <button class="menu-toggle" (click)="toggleMenu()">
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Search Overlay for Mobile -->
+  <div class="search-overlay" [class.active]="isSearchOpen" (click)="toggleSearch()"></div>
+
+  <!-- Mini Cart Sidebar -->
+  <div class="cart-sidebar" [class.active]="isCartOpen">
+    <div class="cart-header">
+      <h3>Your Cart (2)</h3>
+      <button class="cart-close" (click)="toggleCart()">
+        <i class="fa-solid fa-times"></i>
+      </button>
+    </div>
+    <div class="cart-items">
+      <div class="cart-item">
+        <div class="cart-item-image">
+          <img src="https://images.unsplash.com/photo-1523381210434-271e8be1f52b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80" alt="Product">
+        </div>
+        <div class="cart-item-details">
+          <h4>Cotton T-Shirt</h4>
+          <p>Size: M | Color: White</p>
+          <div class="item-quantity">
+            <button class="qty-btn">-</button>
+            <span>1</span>
+            <button class="qty-btn">+</button>
+          </div>
+        </div>
+        <div class="cart-item-price">
+          <span>$24.99</span>
+          <button class="remove-item">
+            <i class="fa-solid fa-trash"></i>
+          </button>
+        </div>
+      </div>
+      <div class="cart-item">
+        <div class="cart-item-image">
+          <img src="https://images.unsplash.com/photo-1560769629-975ec94e6a86?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=764&q=80" alt="Product">
+        </div>
+        <div class="cart-item-details">
+          <h4>Leather Sneakers</h4>
+          <p>Size: 42 | Color: Black</p>
+          <div class="item-quantity">
+            <button class="qty-btn">-</button>
+            <span>1</span>
+            <button class="qty-btn">+</button>
+          </div>
+        </div>
+        <div class="cart-item-price">
+          <span>$89.99</span>
+          <button class="remove-item">
+            <i class="fa-solid fa-trash"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="cart-footer">
+      <div class="cart-totals">
+        <div class="total-row">
+          <span>Subtotal:</span>
+          <span>$114.98</span>
+        </div>
+        <div class="total-row">
+          <span>Shipping:</span>
+          <span>Free</span>
+        </div>
+        <div class="total-row total">
+          <span>Total:</span>
+          <span>$114.98</span>
+        </div>
+      </div>
+      <div class="cart-actions">
+        <a routerLink="/cart" class="btn btn-outline-primary w-100 mb-2">View Cart</a>
+        <a routerLink="/checkout" class="btn btn-primary w-100">Checkout</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cart Overlay -->
+  <div class="cart-overlay" [class.active]="isCartOpen" (click)="toggleCart()"></div>
+</header>

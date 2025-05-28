@@ -1,0 +1,59 @@
+<nav class="navbar">
+  <div class="navbar-container">
+    <!-- Logo -->
+    <div class="navbar-brand">
+      <a routerLink="/" class="logo">
+        <img src="assets/images/logo.svg" alt="E-Shop Logo" />
+        <span>E-Shop</span>
+      </a>
+    </div>
+
+    <!-- Search bar -->
+    <div class="search-bar">
+      <input type="text" placeholder="Search products..." />
+      <button type="button" class="search-button">
+        <i class="fas fa-search"></i>
+      </button>
+    </div>
+
+    <!-- Navigation Menu -->
+    <div class="nav-menu" [class.active]="isMenuOpen">
+      <!-- Menu Items -->
+      <div class="nav-items">
+        <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-item">Home</a>
+        <div class="nav-item dropdown">
+          <span>Categories</span>
+          <div class="dropdown-content">
+            <a *ngFor="let category of categories" 
+               (click)="navigateToCategory(category.id)"
+               class="dropdown-item">
+              {{category.name}}
+            </a>
+          </div>
+        </div>
+        <a routerLink="/products" routerLinkActive="active" class="nav-item">Shop</a>
+        <a routerLink="/deals" routerLinkActive="active" class="nav-item">Deals</a>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="nav-actions">
+        <button class="icon-button">
+          <i class="far fa-heart"></i>
+          <span class="badge">0</span>
+        </button>
+        <button class="icon-button">
+          <i class="fas fa-shopping-cart"></i>
+          <span class="badge">0</span>
+        </button>
+        <button class="icon-button">
+          <i class="far fa-user"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile Menu Toggle -->
+    <button class="menu-toggle" (click)="toggleMenu()">
+      <i [class]="isMenuOpen ? 'fas fa-times' : 'fas fa-bars'"></i>
+    </button>
+  </div>
+</nav>

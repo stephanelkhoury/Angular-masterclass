@@ -1,0 +1,106 @@
+<!-- components/products/product-edit/product-edit.component.html -->
+
+<div class="container" *ngIf="product">
+  <div class="row">
+    <div class="col">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a routerLink="/">Home</a></li>
+          <li class="breadcrumb-item"><a routerLink="/products">Products</a></li>
+          <li class="breadcrumb-item"><a [routerLink]="['/products', product.id]">{{ product.name }}</a></li>
+          <li class="breadcrumb-item active" aria-current="page">Edit</li>
+        </ol>
+      </nav>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-8 offset-md-2">
+      <h2>Edit Product</h2>
+      
+      <form [formGroup]="productForm" (ngSubmit)="onSubmit()">
+        <div class="mb-3">
+          <label for="name" class="form-label">Name</label>
+          <input 
+            type="text" 
+            class="form-control" 
+            id="name" 
+            formControlName="name"
+            (input)="onFormValueChanged()"
+          >
+          <div class="text-danger" *ngIf="productForm.get('name')?.invalid && productForm.get('name')?.touched">
+            Name is required
+          </div>
+        </div>
+        
+        <div class="mb-3">
+          <label for="price" class="form-label">Price</label>
+          <div class="input-group">
+            <span class="input-group-text">$</span>
+            <input 
+              type="number" 
+              class="form-control" 
+              id="price" 
+              formControlName="price"
+              (input)="onFormValueChanged()"
+            >
+          </div>
+          <div class="text-danger" *ngIf="productForm.get('price')?.invalid && productForm.get('price')?.touched">
+            Price must be a positive number
+          </div>
+        </div>
+        
+        <div class="mb-3">
+          <label for="category" class="form-label">Category</label>
+          <select 
+            class="form-select" 
+            id="category" 
+            formControlName="category"
+            (change)="onFormValueChanged()"
+          >
+            <option value="">Select a category</option>
+            <option value="electronics">Electronics</option>
+            <option value="wearables">Wearables</option>
+            <option value="accessories">Accessories</option>
+          </select>
+          <div class="text-danger" *ngIf="productForm.get('category')?.invalid && productForm.get('category')?.touched">
+            Please select a category
+          </div>
+        </div>
+        
+        <div class="mb-3">
+          <label for="description" class="form-label">Description</label>
+          <textarea 
+            class="form-control" 
+            id="description" 
+            formControlName="description" 
+            rows="3"
+            (input)="onFormValueChanged()"
+          ></textarea>
+          <div class="text-danger" *ngIf="productForm.get('description')?.invalid && productForm.get('description')?.touched">
+            Description is required and must be at least 10 characters
+          </div>
+        </div>
+        
+        <div class="mb-3">
+          <label for="imageUrl" class="form-label">Image URL</label>
+          <input 
+            type="text" 
+            class="form-control" 
+            id="imageUrl" 
+            formControlName="imageUrl"
+            (input)="onFormValueChanged()"
+          >
+          <div class="text-danger" *ngIf="productForm.get('imageUrl')?.invalid && productForm.get('imageUrl')?.touched">
+            Please enter a valid URL
+          </div>
+        </div>
+        
+        <div class="d-grid gap-2 d-md-flex">
+          <button type="submit" class="btn btn-primary me-md-2" [disabled]="productForm.invalid">Save Changes</button>
+          <button type="button" class="btn btn-outline-secondary" (click)="cancel()">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

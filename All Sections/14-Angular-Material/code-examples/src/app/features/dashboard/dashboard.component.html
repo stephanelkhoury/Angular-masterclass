@@ -1,0 +1,128 @@
+<div class="dashboard-container">
+  <h1 class="mat-headline-4">Dashboard</h1>
+  
+  <!-- Loading overlay -->
+  <app-loading-spinner *ngIf="loading" [overlay]="true" message="Loading dashboard data..."></app-loading-spinner>
+  
+    <!-- Stats cards -->
+  <div class="dashboard-grid" fxLayout="row wrap" fxLayoutGap="16px grid">
+    <div fxFlex="100%" fxFlex.gt-xs="50%" fxFlex.gt-sm="25%" *ngFor="let stat of statCards">
+      <app-stat-card
+        [title]="stat.title"
+        [value]="stat.value"
+        [icon]="stat.icon"
+        [color]="stat.color"
+        [increase]="stat.increase"
+        [percentage]="stat.percentage">
+      </app-stat-card>
+    </div>
+  </div>
+  
+  <!-- Charts section -->
+  <div class="dashboard-grid" fxLayout="row wrap" fxLayoutGap="16px grid">
+    <div fxFlex="100%" fxFlex.gt-sm="60%">
+      <app-chart-card
+        title="Sales Overview"
+        subtitle="Monthly sales performance"
+        [chartData]="lineChartData"
+        chartType="line">
+      </app-chart-card>
+    </div>
+    
+    <div fxFlex="100%" fxFlex.gt-sm="40%">
+      <app-chart-card
+        title="Revenue vs Expenses"
+        subtitle="Quarterly comparison"
+        [chartData]="barChartData"
+        chartType="bar">
+      </app-chart-card>
+    </div>
+  </div>
+  
+  <!-- Recent activity section -->
+  <div class="dashboard-grid" fxLayout="row wrap" fxLayoutGap="16px grid">
+    <div fxFlex="100%" fxFlex.gt-sm="50%">
+      <app-recent-activity [activities]="recentActivities"></app-recent-activity>
+    </div>
+    
+    <div fxFlex="100%" fxFlex.gt-sm="50%">
+      <!-- Quick Actions Panel -->
+      <mat-card appearance="outlined" class="actions-card">
+        <mat-card-header>
+          <mat-card-title>Quick Actions</mat-card-title>
+        </mat-card-header>
+        
+        <mat-card-content>
+          <div class="actions-grid" fxLayout="row wrap" fxLayoutGap="16px grid">
+            <div fxFlex="50%" fxFlex.xs="100%">
+              <button mat-raised-button color="primary" class="action-button">
+                <mat-icon>add</mat-icon>
+                New Product
+              </button>
+            </div>
+            
+            <div fxFlex="50%" fxFlex.xs="100%">
+              <button mat-raised-button color="accent" class="action-button">
+                <mat-icon>person_add</mat-icon>
+                Add User
+              </button>
+            </div>
+            
+            <div fxFlex="50%" fxFlex.xs="100%">
+              <button mat-raised-button color="warn" class="action-button">
+                <mat-icon>report_problem</mat-icon>
+                Report Issue
+              </button>
+            </div>
+            
+            <div fxFlex="50%" fxFlex.xs="100%">
+              <button mat-raised-button color="primary" class="action-button">
+                <mat-icon>assessment</mat-icon>
+                Generate Report
+              </button>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+      
+      <!-- System Status Card -->
+      <mat-card appearance="outlined" class="status-card">
+        <mat-card-header>
+          <mat-card-title>System Status</mat-card-title>
+          <div class="spacer"></div>
+          <div class="status-indicator online">
+            <span class="status-dot"></span>
+            <span class="status-text">All Systems Normal</span>
+          </div>
+        </mat-card-header>
+        
+        <mat-card-content>
+          <mat-list>
+            <h3 matSubheader>Service Status</h3>
+            
+            <mat-list-item>
+              <mat-icon matListItemIcon color="primary">cloud_done</mat-icon>
+              <span matListItemTitle>API Server</span>
+              <span matListItemLine>99.9% Uptime</span>
+              <mat-progress-bar mode="determinate" value="99.9" color="primary"></mat-progress-bar>
+            </mat-list-item>
+            
+            <mat-list-item>
+              <mat-icon matListItemIcon color="primary">storage</mat-icon>
+              <span matListItemTitle>Database</span>
+              <span matListItemLine>100% Uptime</span>
+              <mat-progress-bar mode="determinate" value="100" color="primary"></mat-progress-bar>
+            </mat-list-item>
+            
+            <mat-list-item>
+              <mat-icon matListItemIcon color="accent">backup</mat-icon>
+              <span matListItemTitle>Backup Service</span>
+              <span matListItemLine>97.5% Uptime</span>
+              <mat-progress-bar mode="determinate" value="97.5" color="accent"></mat-progress-bar>
+            </mat-list-item>
+          </mat-list>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+</div>

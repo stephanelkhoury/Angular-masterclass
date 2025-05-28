@@ -1,0 +1,289 @@
+<div class="home-container">
+  <!-- Loading Spinner -->
+  <app-loading-spinner *ngIf="loading$ | async" [overlay]="true"></app-loading-spinner>
+
+  <!-- Hero Banner -->
+  <app-hero-banner (search)="searchProducts($event)"></app-hero-banner>
+
+  <!-- Featured Products Section -->
+  <section class="section featured-products-section">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-title-group">
+          <h2 class="section-title">Featured Products</h2>
+          <p class="section-subtitle">Handpicked items from our premium collection</p>
+        </div>
+        <div class="section-actions">
+          <button mat-button class="filter-btn" [matMenuTriggerFor]="filterMenu">
+            <mat-icon>tune</mat-icon>
+            <span>Filter</span>
+          </button>
+          <a routerLink="/products" class="view-all-link">
+            View All 
+            <mat-icon>arrow_forward</mat-icon>
+          </a>
+        </div>
+      </div>
+      
+      <div class="products-grid featured-grid">
+        <ng-container *ngIf="(featuredProducts$ | async) as featuredProducts">
+          <div *ngFor="let product of featuredProducts; let i = index" 
+               class="product-card-wrapper"
+               [class.featured-main]="i === 0"
+               [class.featured-secondary]="i === 1 || i === 2">
+            <app-product-card 
+              [product]="product"
+              [size]="i === 0 ? 'large' : 'medium'"
+              [showBuyNow]="true"
+              [showQuantitySelector]="false"
+              (addToCart)="addToCart($event)"
+              (addToWishlist)="addToWishlist($event)"
+              (removeFromWishlist)="removeFromWishlist($event)"
+              (addToCompare)="addToCompare($event)"
+              (quickView)="openQuickView($event)"
+              (viewDetails)="viewProductDetails($event)"
+              (buyNow)="buyNow($event)">
+            </app-product-card>
+          </div>
+          
+          <div *ngIf="featuredProducts.length === 0" class="no-products-message">
+            <div class="empty-state">
+              <mat-icon>inventory_2</mat-icon>
+              <h3>No Featured Products</h3>
+              <p>Check back soon for amazing featured products!</p>
+              <button mat-raised-button color="primary" routerLink="/products">
+                Browse All Products
+              </button>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+  </section>
+
+  <!-- Quick Stats Section -->
+  <section class="section stats-section">
+    <div class="container">
+      <div class="stats-grid">
+        <div class="stat-item">
+          <mat-icon>local_shipping</mat-icon>
+          <div class="stat-content">
+            <h3>Free Shipping</h3>
+            <p>On orders over $50</p>
+          </div>
+        </div>
+        <div class="stat-item">
+          <mat-icon>replay</mat-icon>
+          <div class="stat-content">
+            <h3>30-Day Returns</h3>
+            <p>Hassle-free returns</p>
+          </div>
+        </div>
+        <div class="stat-item">
+          <mat-icon>support_agent</mat-icon>
+          <div class="stat-content">
+            <h3>24/7 Support</h3>
+            <p>Expert customer service</p>
+          </div>
+        </div>
+        <div class="stat-item">
+          <mat-icon>security</mat-icon>
+          <div class="stat-content">
+            <h3>Secure Payment</h3>
+            <p>100% secure transactions</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Promo Banner -->
+  <app-promo-banner></app-promo-banner>
+
+  <!-- Popular Categories -->
+  <section class="section categories-section">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-title-group">
+          <h2 class="section-title">Shop by Category</h2>
+          <p class="section-subtitle">Explore our diverse product categories</p>
+        </div>
+      </div>
+      
+      <div class="categories-grid">
+        <ng-container *ngIf="(popularCategories$ | async) as categories">
+          <app-category-card 
+            *ngFor="let category of categories; trackBy: trackByCategory" 
+            [category]="category"
+            (click)="viewCategory(category)">
+          </app-category-card>
+          
+          <div *ngIf="categories.length === 0" class="no-categories-message">
+            <div class="empty-state">
+              <mat-icon>category</mat-icon>
+              <h3>No Categories Available</h3>
+              <p>Categories will be available soon!</p>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+  </section>
+
+  <!-- New Arrivals Section -->
+  <section class="section new-arrivals-section">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-title-group">
+          <h2 class="section-title">
+            <mat-icon class="title-icon">fiber_new</mat-icon>
+            New Arrivals
+          </h2>
+          <p class="section-subtitle">Fresh products just added to our collection</p>
+        </div>
+        <div class="section-actions">
+          <div class="view-toggle">
+            <button mat-icon-button 
+                    [class.active]="viewMode === 'grid'"
+                    (click)="setViewMode('grid')"
+                    matTooltip="Grid view">
+              <mat-icon>grid_view</mat-icon>
+            </button>
+            <button mat-icon-button 
+                    [class.active]="viewMode === 'list'"
+                    (click)="setViewMode('list')"
+                    matTooltip="List view">
+              <mat-icon>view_list</mat-icon>
+            </button>
+          </div>
+          <a routerLink="/products" [queryParams]="{sort: 'newest'}" class="view-all-link">
+            View All New
+            <mat-icon>arrow_forward</mat-icon>
+          </a>
+        </div>
+      </div>
+      
+      <div class="products-grid" [class.list-view]="viewMode === 'list'">
+        <ng-container *ngIf="(newArrivals$ | async) as newArrivals">
+          <div *ngFor="let product of newArrivals; trackBy: trackByProduct" 
+               class="product-card-wrapper new-arrival-item">
+            <app-product-card 
+              [product]="product"
+              [layout]="viewMode === 'list' ? 'horizontal' : 'vertical'"
+              [showBuyNow]="true"
+              [showQuantitySelector]="viewMode === 'list'"
+              (addToCart)="addToCart($event)"
+              (addToWishlist)="addToWishlist($event)"
+              (removeFromWishlist)="removeFromWishlist($event)"
+              (addToCompare)="addToCompare($event)"
+              (quickView)="openQuickView($event)"
+              (viewDetails)="viewProductDetails($event)"
+              (buyNow)="buyNow($event)">
+            </app-product-card>
+          </div>
+          
+          <div *ngIf="newArrivals.length === 0" class="no-products-message">
+            <div class="empty-state">
+              <mat-icon>new_releases</mat-icon>
+              <h3>No New Arrivals Yet</h3>
+              <p>Stay tuned for exciting new products!</p>
+              <button mat-stroked-button color="primary" routerLink="/products">
+                Browse Existing Products
+              </button>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+  </section>
+
+  <!-- Best Sellers Section -->
+  <section class="section best-sellers-section">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-title-group">
+          <h2 class="section-title">
+            <mat-icon class="title-icon">trending_up</mat-icon>
+            Best Sellers
+          </h2>
+          <p class="section-subtitle">Most popular products loved by our customers</p>
+        </div>
+        <a routerLink="/products" [queryParams]="{sort: 'popular'}" class="view-all-link">
+          View All Best Sellers
+          <mat-icon>arrow_forward</mat-icon>
+        </a>
+      </div>
+      
+      <div class="products-grid best-sellers-grid">
+        <ng-container *ngIf="(bestSellers$ | async) as bestSellers">
+          <div *ngFor="let product of bestSellers; let i = index; trackBy: trackByProduct" 
+               class="product-card-wrapper bestseller-item"
+               [attr.data-rank]="i + 1">
+            <div class="bestseller-rank" *ngIf="i < 3">
+              <span class="rank-number">{{i + 1}}</span>
+              <mat-icon *ngIf="i === 0" class="crown-icon">emoji_events</mat-icon>
+            </div>
+            <app-product-card 
+              [product]="product"
+              [showBuyNow]="true"
+              (addToCart)="addToCart($event)"
+              (addToWishlist)="addToWishlist($event)"
+              (removeFromWishlist)="removeFromWishlist($event)"
+              (addToCompare)="addToCompare($event)"
+              (quickView)="openQuickView($event)"
+              (viewDetails)="viewProductDetails($event)"
+              (buyNow)="buyNow($event)">
+            </app-product-card>
+          </div>
+          
+          <div *ngIf="bestSellers.length === 0" class="no-products-message">
+            <div class="empty-state">
+              <mat-icon>star</mat-icon>
+              <h3>No Best Sellers Data</h3>
+              <p>Best seller rankings will appear here soon!</p>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonials -->
+  <app-testimonial-slider></app-testimonial-slider>
+
+  <!-- Newsletter Signup -->
+  <app-newsletter-signup></app-newsletter-signup>
+</div>
+
+<!-- Filter Menu -->
+<mat-menu #filterMenu="matMenu">
+  <button mat-menu-item (click)="filterByCategory('all')">
+    <mat-icon>category</mat-icon>
+    <span>All Categories</span>
+  </button>
+  <button mat-menu-item (click)="filterByCategory('electronics')">
+    <mat-icon>devices</mat-icon>
+    <span>Electronics</span>
+  </button>
+  <button mat-menu-item (click)="filterByCategory('fashion')">
+    <mat-icon>checkroom</mat-icon>
+    <span>Fashion</span>
+  </button>
+  <button mat-menu-item (click)="filterByCategory('home')">
+    <mat-icon>home</mat-icon>
+    <span>Home & Garden</span>
+  </button>
+  <mat-divider></mat-divider>
+  <button mat-menu-item (click)="sortProducts('price-low')">
+    <mat-icon>trending_down</mat-icon>
+    <span>Price: Low to High</span>
+  </button>
+  <button mat-menu-item (click)="sortProducts('price-high')">
+    <mat-icon>trending_up</mat-icon>
+    <span>Price: High to Low</span>
+  </button>
+  <button mat-menu-item (click)="sortProducts('rating')">
+    <mat-icon>star</mat-icon>
+    <span>Highest Rated</span>
+  </button>
+</mat-menu>

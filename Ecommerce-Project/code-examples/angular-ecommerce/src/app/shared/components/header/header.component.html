@@ -1,0 +1,367 @@
+<div class="header-container">
+  <mat-toolbar color="primary" class="modern-toolbar">
+    <div class="toolbar-left">
+      <!-- Mobile menu button -->
+      <button 
+        mat-icon-button 
+        class="menu-button" 
+        aria-label="Toggle menu" 
+        (click)="toggleMobileMenu()" 
+        fxShow="true" 
+        fxHide.gt-sm>
+        <mat-icon>menu</mat-icon>
+      </button>
+      
+      <!-- Logo with enhanced branding -->
+      <a routerLink="/" class="logo" aria-label="EShop Home">
+        <div class="logo-icon">
+          <mat-icon class="shopping-icon">shopping_bag</mat-icon>
+        </div>
+        <span class="logo-text">EShop</span>
+        <span class="logo-tagline">Premium</span>
+      </a>
+      
+      <!-- Desktop Navigation -->
+      <nav class="desktop-nav" fxShow="true" fxHide.lt-md>
+        <a mat-button routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
+          <mat-icon>home</mat-icon>
+          <span>Home</span>
+        </a>
+        <a mat-button routerLink="/products" routerLinkActive="active">
+          <mat-icon>inventory_2</mat-icon>
+          <span>Products</span>
+        </a>
+        <button mat-button [matMenuTriggerFor]="categoriesMenu" class="categories-menu">
+          <mat-icon>category</mat-icon>
+          <span>Categories</span>
+          <mat-icon class="dropdown-icon">keyboard_arrow_down</mat-icon>
+        </button>
+        <a mat-button routerLink="/about" routerLinkActive="active">
+          <mat-icon>info</mat-icon>
+          <span>About</span>
+        </a>
+        <a mat-button routerLink="/contact" routerLinkActive="active">
+          <mat-icon>contact_support</mat-icon>
+          <span>Contact</span>
+        </a>
+      </nav>
+    </div>
+    
+    <!-- Search Bar (Desktop) -->
+    <div class="search-container" fxShow="true" fxHide.lt-md>
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-icon matPrefix>search</mat-icon>
+        <input 
+          matInput 
+          placeholder="Search products..." 
+          [formControl]="searchControl"
+          (keyup.enter)="onSearch()">
+        <button 
+          mat-icon-button 
+          matSuffix 
+          *ngIf="searchControl.value" 
+          (click)="clearSearch()"
+          aria-label="Clear search">
+          <mat-icon>close</mat-icon>
+        </button>
+      </mat-form-field>
+      <button 
+        mat-raised-button 
+        color="accent" 
+        class="search-btn"
+        (click)="onSearch()">
+        Search
+      </button>
+    </div>
+    
+    <div class="toolbar-right">
+      <!-- Search button (Mobile) -->
+      <button 
+        mat-icon-button 
+        class="search-mobile" 
+        fxShow="true" 
+        fxHide.gt-sm
+        (click)="toggleMobileSearch()"
+        aria-label="Toggle search">
+        <mat-icon>search</mat-icon>
+      </button>
+      
+      <!-- Wishlist -->
+      <a 
+        mat-icon-button 
+        routerLink="/wishlist" 
+        class="wishlist-btn"
+        [matBadge]="wishlistCount$ | async"
+        [matBadgeHidden]="(wishlistCount$ | async) === 0"
+        matBadgeColor="warn"
+        aria-label="Wishlist">
+        <mat-icon>favorite</mat-icon>
+      </a>
+      
+      <!-- Shopping Cart -->
+      <a 
+        mat-icon-button 
+        routerLink="/cart" 
+        class="cart-btn"
+        [matBadge]="cartItemCount$ | async"
+        [matBadgeHidden]="(cartItemCount$ | async) === 0"
+        matBadgeColor="warn"
+        aria-label="Shopping cart">
+        <mat-icon>shopping_cart</mat-icon>
+      </a>
+      
+      <!-- Notifications -->
+      <button 
+        mat-icon-button 
+        [matMenuTriggerFor]="notificationsMenu"
+        class="notifications-btn"
+        [matBadge]="notificationCount$ | async"
+        [matBadgeHidden]="(notificationCount$ | async) === 0"
+        matBadgeColor="warn"
+        aria-label="Notifications">
+        <mat-icon>notifications</mat-icon>
+      </button>
+      
+      <!-- User Menu -->
+      <ng-container *ngIf="(isAuthenticated$ | async); else loginButton">
+        <button 
+          mat-button 
+          [matMenuTriggerFor]="userMenu"
+          class="user-menu-btn">
+          <div class="user-avatar">
+            <img 
+              *ngIf="(currentUser$ | async)?.avatar; else defaultAvatar"
+              [src]="(currentUser$ | async)?.avatar"
+              [alt]="(currentUser$ | async)?.name"
+              class="avatar-img">
+            <ng-template #defaultAvatar>
+              <mat-icon>account_circle</mat-icon>
+            </ng-template>
+          </div>
+          <span class="user-name" fxShow="true" fxHide.lt-lg>
+            {{ (currentUser$ | async)?.name }}
+          </span>
+          <mat-icon class="dropdown-icon">keyboard_arrow_down</mat-icon>
+        </button>
+      </ng-container>
+      
+      <ng-template #loginButton>
+        <a mat-raised-button color="primary" routerLink="/auth/login" class="login-btn">
+          <mat-icon>login</mat-icon>
+          <span class="login-text" fxShow="true" fxHide.lt-md>Login</span>
+        </a>
+      </ng-template>
+    </div>
+  </mat-toolbar>
+
+  <!-- Mobile Search Bar -->
+  <div class="mobile-search-bar" [class.active]="showMobileSearch" fxShow="true" fxHide.gt-sm>
+    <mat-form-field appearance="outline" class="mobile-search-field">
+      <mat-icon matPrefix>search</mat-icon>
+      <input 
+        matInput 
+        placeholder="Search products..." 
+        [formControl]="mobileSearchControl"
+        (keyup.enter)="onMobileSearch()">
+      <button 
+        mat-icon-button 
+        matSuffix 
+        (click)="onMobileSearch()"
+        aria-label="Search">
+        <mat-icon>search</mat-icon>
+      </button>
+    </mat-form-field>
+  </div>
+
+  <!-- Categories Mega Menu -->
+  <mat-menu #categoriesMenu="matMenu" class="categories-mega-menu">
+    <div class="mega-menu-content" (click)="$event.stopPropagation()">
+      <div class="category-column" *ngFor="let category of popularCategories$ | async">
+        <h4 class="category-title">{{ category.name }}</h4>
+        <a 
+          mat-menu-item 
+          *ngFor="let subcategory of category.subcategories"
+          [routerLink]="['/products']"
+          [queryParams]="{category: subcategory}">
+          {{ subcategory }}
+        </a>
+      </div>
+    </div>
+  </mat-menu>
+
+  <!-- User Menu -->
+  <mat-menu #userMenu="matMenu" class="user-dropdown">
+    <div class="user-info" (click)="$event.stopPropagation()">
+      <div class="user-avatar-large">
+        <img 
+          *ngIf="(currentUser$ | async)?.avatar; else defaultAvatarLarge"
+          [src]="(currentUser$ | async)?.avatar"
+          [alt]="(currentUser$ | async)?.name">
+        <ng-template #defaultAvatarLarge>
+          <mat-icon>account_circle</mat-icon>
+        </ng-template>
+      </div>
+      <div class="user-details">
+        <h4>{{ (currentUser$ | async)?.name }}</h4>
+        <p>{{ (currentUser$ | async)?.email }}</p>
+      </div>
+    </div>
+    <mat-divider></mat-divider>
+    <a mat-menu-item routerLink="/profile">
+      <mat-icon>person</mat-icon>
+      <span>My Profile</span>
+    </a>
+    <a mat-menu-item routerLink="/orders">
+      <mat-icon>list_alt</mat-icon>
+      <span>Orders</span>
+    </a>
+    <a mat-menu-item routerLink="/wishlist">
+      <mat-icon>favorite</mat-icon>
+      <span>Wishlist</span>
+    </a>
+    <a mat-menu-item routerLink="/settings">
+      <mat-icon>settings</mat-icon>
+      <span>Settings</span>
+    </a>
+    <ng-container *ngIf="(isAdmin$ | async)">
+      <mat-divider></mat-divider>
+      <a mat-menu-item routerLink="/admin">
+        <mat-icon>admin_panel_settings</mat-icon>
+        <span>Admin Dashboard</span>
+      </a>
+    </ng-container>
+    <mat-divider></mat-divider>
+    <button mat-menu-item (click)="logout()">
+      <mat-icon>exit_to_app</mat-icon>
+      <span>Logout</span>
+    </button>
+  </mat-menu>
+
+  <!-- Notifications Menu -->
+  <mat-menu #notificationsMenu="matMenu" class="notifications-dropdown">
+    <div class="notifications-header" (click)="$event.stopPropagation()">
+      <h4>Notifications</h4>
+      <button mat-icon-button (click)="markAllAsRead()" aria-label="Mark all as read">
+        <mat-icon>done_all</mat-icon>
+      </button>
+    </div>
+    <mat-divider></mat-divider>
+    <div class="notifications-list">
+      <ng-container *ngIf="(notifications$ | async) as notifications; else noNotifications">
+        <div 
+          class="notification-item" 
+          *ngFor="let notification of notifications"
+          [class.unread]="!notification.read"
+          (click)="markAsRead(notification)">
+          <mat-icon [class]="'notification-icon ' + notification.type">
+            {{ getNotificationIcon(notification.type) }}
+          </mat-icon>
+          <div class="notification-content">
+            <p class="notification-message">{{ notification.message }}</p>
+            <small class="notification-time">{{ notification.createdAt | date:'short' }}</small>
+          </div>
+        </div>
+      </ng-container>
+      <ng-template #noNotifications>
+        <div class="no-notifications">
+          <mat-icon>notifications_none</mat-icon>
+          <p>No new notifications</p>
+        </div>
+      </ng-template>
+    </div>
+    <mat-divider></mat-divider>
+    <a mat-menu-item routerLink="/notifications" class="view-all-notifications">
+      View All Notifications
+    </a>
+  </mat-menu>
+
+  <!-- Mobile Menu Overlay -->
+  <div class="mobile-menu-overlay" [class.active]="showMobileMenu" (click)="toggleMobileMenu()">
+    <div class="mobile-menu-content" (click)="$event.stopPropagation()">
+      <div class="mobile-menu-header">
+        <div class="mobile-logo">
+          <mat-icon>shopping_bag</mat-icon>
+          <span>EShop</span>
+        </div>
+        <button mat-icon-button (click)="toggleMobileMenu()" aria-label="Close menu">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+      
+      <mat-nav-list class="mobile-nav-list">
+        <a mat-list-item routerLink="/" (click)="toggleMobileMenu()">
+          <mat-icon matListIcon>home</mat-icon>
+          <span matLine>Home</span>
+        </a>
+        <a mat-list-item routerLink="/products" (click)="toggleMobileMenu()">
+          <mat-icon matListIcon>inventory_2</mat-icon>
+          <span matLine>Products</span>
+        </a>
+        <button mat-list-item (click)="toggleMobileCategories()">
+          <mat-icon matListIcon>category</mat-icon>
+          <span matLine>Categories</span>
+          <mat-icon class="expand-icon">
+            {{ showMobileCategories ? 'expand_less' : 'expand_more' }}
+          </mat-icon>
+        </button>
+        <div class="mobile-categories" [class.expanded]="showMobileCategories">
+          <a 
+            mat-list-item 
+            *ngFor="let category of popularCategories$ | async"
+            [routerLink]="['/products']"
+            [queryParams]="{category: category.name}"
+            (click)="toggleMobileMenu()"
+            class="subcategory-item">
+            <span matLine>{{ category.name }}</span>
+          </a>
+        </div>
+        <a mat-list-item routerLink="/about" (click)="toggleMobileMenu()">
+          <mat-icon matListIcon>info</mat-icon>
+          <span matLine>About</span>
+        </a>
+        <a mat-list-item routerLink="/contact" (click)="toggleMobileMenu()">
+          <mat-icon matListIcon>contact_support</mat-icon>
+          <span matLine>Contact</span>
+        </a>
+        
+        <mat-divider></mat-divider>
+        
+        <ng-container *ngIf="(isAuthenticated$ | async); else mobileLoginSection">
+          <a mat-list-item routerLink="/profile" (click)="toggleMobileMenu()">
+            <mat-icon matListIcon>person</mat-icon>
+            <span matLine>My Profile</span>
+          </a>
+          <a mat-list-item routerLink="/orders" (click)="toggleMobileMenu()">
+            <mat-icon matListIcon>list_alt</mat-icon>
+            <span matLine>My Orders</span>
+          </a>
+          <a mat-list-item routerLink="/wishlist" (click)="toggleMobileMenu()">
+            <mat-icon matListIcon>favorite</mat-icon>
+            <span matLine>Wishlist</span>
+          </a>
+          <ng-container *ngIf="(isAdmin$ | async)">
+            <a mat-list-item routerLink="/admin" (click)="toggleMobileMenu()">
+              <mat-icon matListIcon>admin_panel_settings</mat-icon>
+              <span matLine>Admin Dashboard</span>
+            </a>
+          </ng-container>
+          <button mat-list-item (click)="logout(); toggleMobileMenu()">
+            <mat-icon matListIcon>exit_to_app</mat-icon>
+            <span matLine>Logout</span>
+          </button>
+        </ng-container>
+        
+        <ng-template #mobileLoginSection>
+          <a mat-list-item routerLink="/auth/login" (click)="toggleMobileMenu()">
+            <mat-icon matListIcon>login</mat-icon>
+            <span matLine>Login</span>
+          </a>
+          <a mat-list-item routerLink="/auth/register" (click)="toggleMobileMenu()">
+            <mat-icon matListIcon>person_add</mat-icon>
+            <span matLine>Sign Up</span>
+          </a>
+        </ng-template>
+      </mat-nav-list>
+    </div>
+  </div>
+</div>

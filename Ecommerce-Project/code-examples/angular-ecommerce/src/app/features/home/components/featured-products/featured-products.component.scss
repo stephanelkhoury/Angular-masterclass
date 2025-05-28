@@ -1,0 +1,381 @@
+// Modern Featured Products Section with Design System Integration
+:root {
+  --featured-spacing: 2.5rem;
+  --featured-spacing-mobile: 1.5rem;
+  --featured-card-gap: 1.5rem;
+  --featured-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --featured-title-gradient: linear-gradient(135deg, #1f2937 0%, #374151 100%);
+}
+
+.featured-products {
+  padding: var(--featured-spacing) 0;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  position: relative;
+  overflow: hidden;
+  
+  // Subtle background pattern
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M 20 0 L 0 0 0 20" fill="none" stroke="rgb(148 163 184)" stroke-width="0.5" opacity="0.3"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+    pointer-events: none;
+  }
+}
+
+.featured-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 3rem;
+  position: relative;
+  z-index: 1;
+  
+  .featured-title {
+    font-size: clamp(2rem, 4vw, 2.5rem);
+    font-weight: 700;
+    margin: 0;
+    background: var(--featured-title-gradient);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    position: relative;
+    
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: -12px;
+      left: 0;
+      width: 80px;
+      height: 4px;
+      background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+      border-radius: 2px;
+      animation: titleAccent 3s ease-in-out infinite alternate;
+    }
+    
+    &::before {
+      content: '';
+      position: absolute;
+      bottom: -16px;
+      left: 4px;
+      width: 72px;
+      height: 4px;
+      background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+      border-radius: 2px;
+      opacity: 0.3;
+      animation: titleAccentShadow 3s ease-in-out infinite alternate;
+    }
+  }
+  
+  .view-all-link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #6366f1;
+    font-weight: 600;
+    text-decoration: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 50px;
+    background: rgba(99, 102, 241, 0.1);
+    border: 2px solid transparent;
+    transition: var(--featured-transition);
+    position: relative;
+    overflow: hidden;
+    
+    // Hover shimmer effect
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, 
+        transparent 0%, 
+        rgba(255, 255, 255, 0.3) 50%, 
+        transparent 100%);
+      transition: left 0.6s ease;
+    }
+    
+    &:hover {
+      color: white;
+      background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+      border-color: rgba(255, 255, 255, 0.2);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(99, 102, 241, 0.4);
+      
+      &::before {
+        left: 100%;
+      }
+      
+      mat-icon {
+        transform: translateX(4px);
+      }
+    }
+    
+    mat-icon {
+      font-size: 1.25rem;
+      height: 1.25rem;
+      width: 1.25rem;
+      transition: var(--featured-transition);
+    }
+  }
+}
+
+.products-grid {
+  position: relative;
+  min-height: 400px;
+  z-index: 1;
+}
+
+.products-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--featured-card-gap);
+  
+  // Enhanced product card styling
+  .product-card-wrapper {
+    height: 100%;
+    transform: translateY(0);
+    transition: var(--featured-transition);
+    
+    &:hover {
+      transform: translateY(-8px);
+      
+      ::ng-deep app-product-card .product-card {
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        border-color: rgba(99, 102, 241, 0.2);
+      }
+    }
+    
+    ::ng-deep app-product-card .product-card {
+      height: 100%;
+      border-radius: 16px;
+      background: white;
+      border: 1px solid rgba(0, 0, 0, 0.06);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      transition: var(--featured-transition);
+      overflow: hidden;
+      
+      .product-image-container {
+        position: relative;
+        overflow: hidden;
+        border-radius: 16px 16px 0 0;
+        
+        .product-image {
+          transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        &:hover .product-image {
+          transform: scale(1.05);
+        }
+        
+        // Product badge for featured items
+        &::before {
+          content: '✨ Featured';
+          position: absolute;
+          top: 12px;
+          left: 12px;
+          background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+          color: white;
+          padding: 0.25rem 0.75rem;
+          border-radius: 20px;
+          font-size: 0.75rem;
+          font-weight: 600;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+          z-index: 2;
+          box-shadow: 0 2px 8px rgba(245, 158, 11, 0.4);
+        }
+      }
+      
+      mat-card-content {
+        padding: 1.25rem;
+        
+        .product-name {
+          font-weight: 600;
+          color: #1f2937;
+          margin-bottom: 0.5rem;
+          line-height: 1.4;
+        }
+        
+        .product-price {
+          font-weight: 700;
+          color: #059669;
+          font-size: 1.125rem;
+        }
+      }
+      
+      mat-card-actions {
+        padding: 0 1.25rem 1.25rem;
+        border-top: 1px solid rgba(0, 0, 0, 0.04);
+        background: rgba(249, 250, 251, 0.5);
+        
+        button {
+          border-radius: 8px;
+          font-weight: 500;
+          transition: var(--featured-transition);
+          
+          &:first-child {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: white;
+            
+            &:hover {
+              background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+              transform: translateY(-1px);
+              box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+// Enhanced no products state
+.no-products-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  text-align: center;
+  border: 2px dashed #e5e7eb;
+  position: relative;
+  overflow: hidden;
+  
+  // Animated background
+  &::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: conic-gradient(from 0deg, transparent, rgba(99, 102, 241, 0.1), transparent);
+    animation: rotate 20s linear infinite;
+    pointer-events: none;
+  }
+  
+  mat-icon {
+    font-size: 4rem;
+    height: 4rem;
+    width: 4rem;
+    color: #9ca3af;
+    margin-bottom: 1.5rem;
+    animation: float 3s ease-in-out infinite;
+    position: relative;
+    z-index: 1;
+  }
+  
+  p {
+    color: #6b7280;
+    font-size: 1.125rem;
+    line-height: 1.6;
+    margin: 0;
+    position: relative;
+    z-index: 1;
+    max-width: 300px;
+  }
+  
+  .explore-button {
+    margin-top: 2rem;
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    color: white;
+    border: none;
+    padding: 0.75rem 2rem;
+    border-radius: 50px;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: var(--featured-transition);
+    position: relative;
+    z-index: 1;
+    
+    &:hover {
+      background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(99, 102, 241, 0.4);
+    }
+  }
+}
+
+// Loading state enhancement
+.loading-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(5px);
+  border-radius: 16px;
+  z-index: 10;
+  
+  ::ng-deep app-loading-spinner {
+    .spinner-container {
+      .loading-text {
+        color: #6366f1;
+        font-weight: 600;
+        margin-top: 1rem;
+      }
+    }
+  }
+}
+
+// Animation keyframes
+@keyframes titleAccent {
+  0% { width: 80px; }
+  100% { width: 120px; }
+}
+
+@keyframes titleAccentShadow {
+  0% { width: 72px; opacity: 0.3; }
+  100% { width: 112px; opacity: 0.2; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes rotate {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@media (max-width: 992px) {
+  .products-container {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .featured-header {
+    .featured-title {
+      font-size: 24px;
+    }
+  }
+  
+  .products-container {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+}
+
+@media (max-width: 576px) {
+  .products-container {
+    grid-template-columns: 1fr;
+  }
+}

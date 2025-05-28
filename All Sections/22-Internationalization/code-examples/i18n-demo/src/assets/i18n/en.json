@@ -1,0 +1,117 @@
+{
+  "NAV": {
+    "HOME": "Home",
+    "PRODUCTS": "Products",
+    "DATES": "Date Formats",
+    "NUMBERS": "Number Formats",
+    "CONTACT": "Contact Us",
+    "PROFILE": "User Profile"
+  },
+  "HEADER": {
+    "CURRENT_LANG": "Current language"
+  },
+  "WELCOME": {
+    "TITLE": "Welcome to Angular Internationalization",
+    "SUBTITLE": "Learn how to create multi-language applications with Angular",
+    "DESCRIPTION": "This demo shows different approaches to internationalization in Angular applications, including built-in i18n and ngx-translate.",
+    "FEATURES": {
+      "TITLE": "Features demonstrated in this application:",
+      "ANGULAR_I18N": "Angular built-in internationalization (i18n)",
+      "NGX_TRANSLATE": "Dynamic translation with ngx-translate",
+      "LOCALIZATION": "Date, number, and currency localization",
+      "FORMATS": "Custom format examples for different locales"
+    },
+    "BROWSE_PRODUCTS": "Browse Products"
+  },
+  "PRODUCTS": {
+    "TITLE": "Product Catalog",
+    "DESCRIPTION": "Browse our selection of products with localized prices and descriptions.",
+    "PRICE": "Price",
+    "CATEGORY": "Category",
+    "ADD_TO_CART": "Add to cart",
+    "FILTER_BY_CATEGORY": "Filter by category",
+    "ALL_CATEGORIES": "All categories",
+    "CATEGORIES": {
+      "ELECTRONICS": "Electronics",
+      "HOME": "Home & Kitchen",
+      "CLOTHING": "Clothing & Accessories"
+    }
+  },
+  "DATES": {
+    "TITLE": "Date Formatting Examples",
+    "DESCRIPTION": "See how dates are formatted differently based on your selected locale.",
+    "CURRENT_DATETIME": "Current Date and Time Formats",
+    "SHORT_DATE": "Short date",
+    "MEDIUM_DATE": "Medium date",
+    "LONG_DATE": "Long date",
+    "FULL_DATE": "Full date",
+    "SHORT_TIME": "Short time",
+    "MEDIUM_TIME": "Medium time",
+    "FULL_DATETIME": "Full date and time",
+    "CUSTOM_FORMATS": "Custom Date Formats",
+    "DAY_MONTH": "Day and month",
+    "MONTH_YEAR": "Month and year",
+    "WEEKDAY": "Weekday",
+    "RELATIVE_DATES": "Relative Dates",
+    "YESTERDAY": "Yesterday",
+    "TODAY": "Today",
+    "TOMORROW": "Tomorrow"
+  },
+  "NUMBERS": {
+    "TITLE": "Number Formatting Examples",
+    "DESCRIPTION": "See how numbers, currencies and percentages are formatted differently based on your selected locale.",
+    "BASIC_FORMATTING": "Basic Number Formatting",
+    "INTEGER": "Integer",
+    "DECIMAL": "Decimal",
+    "PERCENT": "Percentage",
+    "CURRENCY_FORMATTING": "Currency Formatting",
+    "CUSTOM_FORMATS": "Custom Number Formats",
+    "NO_DECIMAL": "No decimal places",
+    "TWO_DECIMALS": "Two decimal places",
+    "FOUR_DECIMALS": "Four decimal places",
+    "CUSTOM_PERCENT": "Custom percentage format"
+  },
+  "CONTACT": {
+    "TITLE": "Contact Us",
+    "DESCRIPTION": "Fill out the form below to send us a message.",
+    "NAME": "Name",
+    "EMAIL": "Email",
+    "SUBJECT": "Subject",
+    "MESSAGE": "Message",
+    "NAME_PLACEHOLDER": "Enter your full name",
+    "EMAIL_PLACEHOLDER": "Enter your email address",
+    "SELECT_SUBJECT": "Select a subject",
+    "MESSAGE_PLACEHOLDER": "Enter your message here",
+    "AGREE_TERMS": "I agree to the terms and conditions",
+    "SUBMIT": "Submit",
+    "SUBMISSION_SUCCESS": "Thank you! Your message has been submitted successfully.",
+    "SUBJECTS": {
+      "GENERAL": "General Inquiry",
+      "SUPPORT": "Technical Support",
+      "BILLING": "Billing Question",
+      "FEEDBACK": "Feedback and Suggestions"
+    }
+  },
+  "PROFILE": {
+    "TITLE": "User Profile",
+    "DESCRIPTION": "View and manage your profile information.",
+    "PERSONAL_INFO": "Personal Information",
+    "FULL_NAME": "Full name",
+    "BIRTH_DATE": "Date of birth",
+    "ADDRESS": "Address",
+    "BIO": "Biography",
+    "LANGUAGE_PREFERENCE": "Language Preferences",
+    "CURRENT_LANGUAGE": "Your current language is",
+    "CHANGE_LANGUAGE": "Change display language",
+    "LOCALE_SAVED": "Your language preference will be saved for future visits"
+  },
+  "COUNTRIES": {
+    "USA": "United States",
+    "UK": "United Kingdom",
+    "CANADA": "Canada",
+    "FRANCE": "France",
+    "GERMANY": "Germany",
+    "SPAIN": "Spain",
+    "JAPAN": "Japan"
+  }
+}

@@ -1,0 +1,136 @@
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable, of, throwError, BehaviorSubject } from 'rxjs';
+import { catchError, tap, map } from 'rxjs/operators';
+
+import { environment } from '../../../environments/environment';
+import { StorageService } from './storage.service';
+import { NotificationService } from './notification.service';
+import { User } from '../models/user.model';
+
+export interface AuthResponse {
+  user: User;
+  token: string;
+  expiresIn: number;
+}
+
+@Injectable({
+  providedIn: 'root'
+})
+export class AuthService {
+  private apiUrl = `${environment.apiUrl}/auth`;
+  private tokenExpirationTimer: any;
+  private userSubject = new BehaviorSubject<User | null>(null);
+
+  user$ = this.userSubject.asObservable();
+
+  constructor(
+    private http: HttpClient,
+    private storageService: StorageService,
+    private notificationService: NotificationService
+  ) {
+    this.autoLogin();
+  }
+
+  signup(email: string, password: string, name: string): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${this.apiUrl}/signup`, { email, password, name })
+      .pipe(
+        tap(response => this.handleAuthentication(response)),
+        catchError(error => {
+          this.notificationService.error('Registration failed. Please try again.');
+          return throwError(() => error);
+        })
+      );
+  }
+
+  login(email: string, password: string): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${this.apiUrl}/login`, { email, password })
+      .pipe(
+        tap(response => this.handleAuthentication(response)),
+        catchError(error => {
+          this.notificationService.error('Login failed. Please check your credentials and try again.');
+          return throwError(() => error);
+        })
+      );
+  }
+
+  logout(): void {
+    this.userSubject.next(null);
+    this.storageService.removeItem('userData');
+    this.storageService.removeItem('token');
+    
+    if (this.tokenExpirationTimer) {
+      clearTimeout(this.tokenExpirationTimer);
+    }
+    this.tokenExpirationTimer = null;
+  }
+
+  autoLogin(): Observable<boolean> {
+    const userData = this.storageService.getItem<any>('userData');
+    if (!userData) {
+      return of(false);
+    }
+
+    try {
+      const loadedUser = userData.user;
+      const tokenExpirationDate = new Date(userData.tokenExpirationDate);
+
+      if (tokenExpirationDate <= new Date()) {
+        this.logout();
+        return of(false);
+      }
+
+      this.userSubject.next(loadedUser);
+      this.setAutoLogoutTimer(tokenExpirationDate.getTime() - new Date().getTime());
+      return of(true);
+    } catch (error) {
+      console.error('Error parsing user data', error);
+      this.logout();
+      return of(false);
+    }
+  }
+
+  getCurrentUser(): Observable<User | null> {
+    return this.user$;
+  }
+
+  getToken(): string | null {
+    const userData = this.storageService.getItem<any>('userData');
+    
+    if (!userData) {
+      return null;
+    }
+    
+    try {
+      return userData.token;
+    } catch (error) {
+      console.error('Error parsing user data', error);
+      return null;
+    }
+  }
+
+  isAuthenticated(): boolean {
+    return !!this.getToken();
+  }
+
+  private handleAuthentication(response: AuthResponse): void {
+    const { user, token, expiresIn } = response;
+    const expirationDate = new Date(new Date().getTime() + expiresIn * 1000);
+    
+    const userData = {
+      user,
+      token,
+      tokenExpirationDate: expirationDate.toISOString()
+    };
+    
+    this.storageService.setItem('userData', JSON.stringify(userData));
+    this.userSubject.next(user);
+    this.setAutoLogoutTimer(expiresIn * 1000);
+  }
+
+  private setAutoLogoutTimer(expirationDuration: number): void {
+    this.tokenExpirationTimer = setTimeout(() => {
+      this.logout();
+    }, expirationDuration);
+  }
+}
