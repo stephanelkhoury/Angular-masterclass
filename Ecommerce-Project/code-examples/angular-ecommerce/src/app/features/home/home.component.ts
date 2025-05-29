@@ -1,17 +1,23 @@
 import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
-import { Store } from '@ngrx/store';
-import { Observable, combineLatest, map, startWith } from 'rxjs';
+import { Store, select } from '@ngrx/store'; // Import select
+import { Observable, map } from 'rxjs';
 import { FormControl } from '@angular/forms';
 
 import { AppState } from '../../store';
-import { Product } from '../../core/models/product.model';
-import { Category } from '../../core/models/product.model';
+import { Product, Category } from '../../core/models/product.model';
 import { ProductService } from '../../core/services/product.service';
 import { CartService } from '../../core/services/cart.service';
 import { WishlistService } from '../../core/services/wishlist.service';
-import { CompareService } from '../../core/services/compare.service';
 import { NotificationService } from '../../core/services/notification.service';
+import { selectFeaturedProducts, selectAllProducts, selectFeaturedCategories } from '../../store/selectors/product.selectors'; 
+// Importing product actions from the correct path
+import * as ProductActions from '../../store/actions/product.actions';
+
+
+// Placeholder for selectNewArrivals - replace with your actual selector
+// Ensure this selector is correctly defined in your product.selectors.ts
+const selectNewArrivals = (state: AppState) => state.products.items; // Example: all products, then sorted
 
 @Component({
   selector: 'app-home',
@@ -23,9 +29,9 @@ export class HomeComponent implements OnInit {
   // Product data streams
   featuredProducts$: Observable<Product[]>;
   newArrivals$: Observable<Product[]>;
+  topCategories$: Observable<Category[]>;
   bestSellers$: Observable<Product[]>;
-  discountedProducts$: Observable<Product[]>;
-  popularCategories$: Observable<Category[]>;
+  onSaleProducts$: Observable<Product[]>;
   loading$: Observable<boolean>;
 
   // View and filter controls
@@ -67,49 +73,57 @@ export class HomeComponent implements OnInit {
   constructor(
     private store: Store<AppState>,
     private productService: ProductService,
-    private cartService: CartService,
-    private wishlistService: WishlistService,
-    private compareService: CompareService,
-    private notificationService: NotificationService,
-    private router: Router
+    private router: Router, // Inject Router
+    private cartService: CartService, // Inject CartService
+    private wishlistService: WishlistService, // Inject WishlistService
+    private notificationService: NotificationService // Inject NotificationService
   ) {
-    // Initialize product data streams
-    this.featuredProducts$ = this.store.select(state => 
-      state.products.items.filter((product: Product) => product.featured).slice(0, 8)
+    this.store.dispatch(ProductActions.loadProducts({ params: {} })); // Dispatch action to load products
+    this.store.dispatch(ProductActions.loadCategories()); // Dispatch action to load categories
+
+    this.featuredProducts$ = this.store.pipe(
+      select(selectFeaturedProducts), // Use your actual selector
+      map(products => products.slice(0, 8)) 
     );
 
-    this.newArrivals$ = this.store.select(state => 
-      state.products.items
-        .sort((a: Product, b: Product) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-        .slice(0, 8)
+    this.newArrivals$ = this.store.select(selectNewArrivals).pipe( // Using the placeholder
+      map(products => 
+        [...(products || [])].sort((a: Product, b: Product) => {
+          const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+          const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+          return dateB - dateA;
+        }).slice(0, 8)
+      )
     );
 
-    this.bestSellers$ = this.store.select(state => 
-      state.products.items
-        .filter((product: Product) => product.featured) // Using featured as bestseller proxy
-        .slice(0, 8)
+    this.topCategories$ = this.store.pipe(
+      select(selectFeaturedCategories), // Use your actual selector for featured categories
+       map(categories => (categories || []).slice(0, 6))
+    );
+    
+    this.bestSellers$ = this.store.pipe(
+      select(selectAllProducts), // Example: select all products
+      map(products => 
+        [...(products || [])]
+          .filter(p => p.featured) // Or a more specific bestseller logic
+          .sort((a, b) => (b.rating || 0) - (a.rating || 0)) // Example: sort by rating
+          .slice(0, 8)
+      )
     );
 
-    this.discountedProducts$ = this.store.select(state => 
-      state.products.items
-        .filter((product: Product) => product.discountPrice && product.discountPrice < product.price)
-        .slice(0, 8)
-    );
-
-    this.popularCategories$ = this.store.select(state => 
-      state.products.categories
-        .filter((category: Category) => category.featured)
-        .slice(0, 6)
+    this.onSaleProducts$ = this.store.pipe(
+      select(selectAllProducts), // Example: select all products
+      map(products => 
+        [...(products || [])]
+          .filter(p => p.discountPrice && p.discountPrice < p.price)
+          .slice(0, 8)
+      )
     );
 
     this.loading$ = this.store.select(state => state.ui.loading);
   }
 
-  ngOnInit(): void {
-    // Load products and categories if not already loaded
-    this.productService.loadProducts();
-    this.productService.loadCategories();
-  }
+  ngOnInit(): void {}
 
   // View and filter methods
   setViewMode(mode: 'grid' | 'list'): void {
@@ -128,9 +142,8 @@ export class HomeComponent implements OnInit {
     this.selectedCategory = categoryId;
   }
 
-  onSearch(): void {
-    const query = this.searchControl.value;
-    if (query) {
+  onSearch(query: string): void {
+    if (query.trim()) {
       this.router.navigate(['/products'], { queryParams: { search: query } });
     }
   }
@@ -140,53 +153,52 @@ export class HomeComponent implements OnInit {
   }
 
   // Product interaction methods
-  addToCart(event: { product: Product; quantity: number } | Product): void {
-    const product = 'product' in event ? event.product : event;
-    const quantity = 'quantity' in event ? event.quantity : 1;
-    this.cartService.addToCart(product, quantity);
-    this.notificationService.show(`${product.name} added to cart`);
+  addToCart(payload: Product | { product: Product; quantity: number }): void {
+    if ('product' in payload) {
+      // Payload is { product: Product, quantity: number }
+      this.cartService.addToCart(payload.product, payload.quantity);
+      this.notificationService.show(`${payload.product.name} added to cart`);
+    } else {
+      // Payload is Product (fallback)
+      this.cartService.addToCart(payload, 1);
+      this.notificationService.show(`${payload.name} added to cart`);
+    }
   }
 
   addToWishlist(product: Product): void {
-    this.wishlistService.addToWishlist(product);
-    this.notificationService.show(`${product.name} added to wishlist`);
+    this.wishlistService.toggleWishlist(product.id).subscribe((added) => {
+      if (added) {
+        this.notificationService.show(`${product.name} added to wishlist`);
+      } else {
+        this.notificationService.show(`${product.name} removed from wishlist`);
+      }
+    });
   }
 
   removeFromWishlist(product: Product): void {
-    this.wishlistService.removeFromWishlist(product.id);
-    this.notificationService.show('Product removed from wishlist');
-  }
-
-  addToCompare(product: Product): void {
-    this.compareService.addToCompare(product);
-    this.notificationService.show(`${product.name} added to compare`);
-  }
-
-  removeFromCompare(product: Product): void {
-    this.compareService.removeFromCompare(product.id);
-    this.notificationService.show(`${product.name} removed from compare`);
-  }
-
-  quickView(product: Product): void {
-    console.log('Quick view for product:', product);
-    // Implement quick view modal logic here
+    this.wishlistService.toggleWishlist(product.id).subscribe(() => {
+      this.notificationService.show('Product removed from wishlist');
+    });
   }
 
   openQuickView(product: Product): void {
-    this.quickView(product);
+    // Open quick view modal or navigate to product detail
+    console.log('Quick view for:', product.name);
+    // For now, navigate to product detail
+    this.router.navigate(['/products', product.id]);
   }
 
   viewProductDetails(product: Product): void {
     this.router.navigate(['/products', product.id]);
   }
 
-  viewCategory(category: any): void {
+  onCategoryClick(category: Category): void {
     this.router.navigate(['/products'], { queryParams: { category: category.id } });
   }
 
-  buyNow(event: { product: Product; quantity: number } | Product): void {
-    const product = 'product' in event ? event.product : event;
-    this.addToCart(event);
+  buyNow(payload: Product | { product: Product; quantity: number }): void {
+    // Add to cart and navigate to cart/checkout
+    this.addToCart(payload);
     this.router.navigate(['/cart']);
   }
 
@@ -232,26 +244,42 @@ export class HomeComponent implements OnInit {
     }
   }
 
-  // Helper methods for template
+  // Search functionality
+  searchProducts(query: string): void {
+    if (query.trim()) {
+      this.router.navigate(['/products'], { queryParams: { search: query } });
+    }
+  }
+
+  // Compare functionality
+  addToCompare(product: Product): void {
+    // Implement compare functionality here
+    // For now, just show a notification
+    this.notificationService.show(`${product.name} added to compare`);
+    console.log('Product added to compare:', product);
+  }
+
+  // Category navigation
+  viewCategory(category: Category): void {
+    this.router.navigate(['/products'], { queryParams: { category: category.id } });
+  }
+
+  // Helper methods for wishlist and compare status
   isInWishlist(productId: string): Observable<boolean> {
     return this.wishlistService.isInWishlist(productId);
   }
 
   isInCompare(productId: string): Observable<boolean> {
-    return this.compareService.isInCompare(productId);
+    // return this.compareService.isInCompare(productId);
+    return new Observable(observer => observer.next(false)); // Placeholder
   }
 
-  getCompareCount(): Observable<number> {
-    return this.compareService.compareCount$;
+  get compareCount$(): Observable<number> {
+    // return this.compareService.compareCount$;
+    return new Observable(observer => observer.next(0)); // Placeholder
   }
 
-  getWishlistCount(): Observable<number> {
+  get wishlistCount$(): Observable<number> {
     return this.wishlistService.wishlistCount$;
-  }
-
-  searchProducts(query: string): void {
-    if (query) {
-      this.router.navigate(['/products'], { queryParams: { search: query } });
-    }
   }
 }

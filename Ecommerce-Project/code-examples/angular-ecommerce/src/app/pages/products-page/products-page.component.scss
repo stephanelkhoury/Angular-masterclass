@@ -1,0 +1,123 @@
+@import '../../../styles/design-system.scss';
+
+.products-page {
+  padding-top: var(--spacing-lg);
+  padding-bottom: var(--spacing-xl);
+
+  .page-header {
+    margin-bottom: var(--spacing-lg);
+    h1 {
+      font-size: var(--text-3xl);
+      color: var(--text-primary);
+      font-weight: var(--font-bold);
+    }
+  }
+
+  .products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: var(--spacing-lg);
+
+    @media (max-width: 600px) {
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: var(--spacing-md);
+    }
+  }
+
+  .product-card {
+    background-color: var(--surface-color, #fff);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    display: flex;
+    flex-direction: column;
+
+    &:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .product-link {
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1; // Allows info to take remaining space
+    }
+
+    .product-image {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+    }
+
+    .product-info {
+      padding: var(--spacing-md);
+      flex-grow: 1; // Pushes button to bottom if card heights vary
+      display: flex;
+      flex-direction: column;
+
+
+      .product-name {
+        font-size: var(--text-lg);
+        font-weight: var(--font-semibold);
+        color: var(--text-primary);
+        margin-bottom: var(--spacing-xs);
+        line-height: 1.3;
+         // Clamp text to 2 lines
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        min-height: 2.6em; // for 2 lines
+      }
+
+      .product-category {
+        font-size: var(--text-sm);
+        color: var(--text-muted);
+        margin-bottom: var(--spacing-sm);
+      }
+
+      .product-price {
+        font-size: var(--text-xl);
+        font-weight: var(--font-bold);
+        color: var(--primary-color);
+        margin-top: auto; // Pushes price to bottom of info if category is short
+      }
+    }
+    
+    .add-to-cart-btn {
+      width: calc(100% - (2 * var(--spacing-md))); // Full width minus padding
+      margin: 0 var(--spacing-md) var(--spacing-md) var(--spacing-md);
+      padding: var(--spacing-sm) 0; // Adjust padding
+      font-size: var(--text-base);
+    }
+  }
+
+  .no-products-message, .loading-message {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-2xl) 0;
+    text-align: center;
+    color: var(--text-muted);
+
+    mat-icon, mat-spinner {
+      font-size: 3rem;
+      width: 3rem;
+      height: 3rem;
+      margin-bottom: var(--spacing-md);
+      color: var(--text-muted);
+    }
+    mat-spinner::ng-deep circle {
+        stroke: var(--primary-color) !important;
+    }
+
+    p {
+      font-size: var(--text-lg);
+    }
+  }
+}

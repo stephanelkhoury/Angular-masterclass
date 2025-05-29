@@ -3,9 +3,9 @@
     <div class="product-item" *ngFor="let product of products">
       <app-product-card
         [product]="product"
-        (addToCart)="onAddToCart($event)"
-        (addToWishlist)="onAddToWishlist($event)"
-        (viewDetails)="onViewDetails($event)">
+        (productAddedToCart)="onAddToCart($event)"
+        (productAddedToWishlist)="onAddToWishlist(product)"
+        (productViewed)="onViewDetails(product)">
       </app-product-card>
     </div>
   </ng-container>

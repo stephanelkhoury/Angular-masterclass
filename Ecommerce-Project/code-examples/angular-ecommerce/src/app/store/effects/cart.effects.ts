@@ -7,7 +7,7 @@ import { map, catchError, exhaustMap, tap, withLatestFrom } from 'rxjs/operators
 import { CartService } from '../../core/services/cart.service';
 import { NotificationService } from '../../core/services/notification.service';
 import { StorageService } from '../../core/services/storage.service';
-import { CartItem } from '../../core/models/cart.model';
+import { CartItem } from '../../core/models/cart-item.model';
 import { AppState } from '../index';
 import * as CartActions from '../actions/cart.actions';
 import * as UiActions from '../actions/ui.actions';
@@ -42,41 +42,55 @@ export class CartEffects {
   addToCart$ = createEffect(() =>
     this.actions$.pipe(
       ofType(CartActions.addToCart),
-      withLatestFrom(this.store.select(selectCartItems), this.store.select(selectIsAuthenticated)),
-      tap(([{ product, quantity }, _, __]) => {
-        this.notificationService.showSuccess(`${product.name} added to cart`);
+      map(action => action.item), // Extract the item from the action
+      withLatestFrom(
+        this.store.select(selectCartItems),
+        this.store.select(selectIsAuthenticated)
+      ),
+      tap(([{ productId, quantity }, _, __]) => { // Destructure from the extracted item
+        this.notificationService.showSuccess(`${productId} added to cart`);
       }),
-      exhaustMap(([{ product, quantity }, currentItems, isAuthenticated]) => {
-        const cartItem: CartItem = {
-          productId: product.id,
-          name: product.name,
-          price: product.price,
-          image: product.imageUrl || '',
-          quantity
-        };
-
-        const updatedItems = [...currentItems];
-        const existingItemIndex = updatedItems.findIndex(item => item.productId === product.id);
-
-        if (existingItemIndex >= 0) {
-          updatedItems[existingItemIndex] = {
-            ...updatedItems[existingItemIndex],
-            quantity: updatedItems[existingItemIndex].quantity + quantity
-          };
-        } else {
-          updatedItems.push(cartItem);
-        }
-
-        this.storageService.setItem('cart', JSON.stringify(updatedItems));
-
+      exhaustMap(([item, currentItems, isAuthenticated]) => {
         if (isAuthenticated) {
-          return this.cartService.syncCart(updatedItems).pipe(
-            map(() => CartActions.syncCartWithServerSuccess()),
-            catchError(error => of(CartActions.syncCartWithServerFailure({ error })))
+          // Simulate API call to add item to backend cart
+                  return of({ type: '[Cart API] Add Item Success - Backend (Placeholder)', payload: item }).pipe(
+            map(() => CartActions.loadCartSuccess({ 
+              items: [...currentItems, {
+                productId: item.productId,
+                quantity: item.quantity,
+                name: item.name || '',
+                price: item.price,
+                image: item.image || item.imageUrl || '',
+                unitPrice: item.unitPrice || item.price
+              }]
+            })),
+            catchError(error => of(CartActions.loadCartFailure({ error })))
           );
+        } else {
+          const cartItem: CartItem = {
+            productId: item.productId,
+            name: item.name || '',
+            price: item.price,
+            image: item.image || item.imageUrl || '',
+            quantity: item.quantity
+          };
+
+          const updatedItems = [...currentItems];
+          const existingItemIndex = updatedItems.findIndex(cartItem => cartItem.productId === item.productId);
+
+          if (existingItemIndex >= 0) {
+            updatedItems[existingItemIndex] = {
+              ...updatedItems[existingItemIndex],
+              quantity: updatedItems[existingItemIndex].quantity + item.quantity
+            };
+          } else {
+            updatedItems.push(cartItem);
+          }
+
+          this.storageService.setItem('cart', JSON.stringify(updatedItems));
+
+          return of(CartActions.syncCartWithServerSuccess());
         }
-        
-        return of(CartActions.syncCartWithServerSuccess());
       })
     )
   );
@@ -84,14 +98,18 @@ export class CartEffects {
   removeFromCart$ = createEffect(() =>
     this.actions$.pipe(
       ofType(CartActions.removeFromCart),
-      withLatestFrom(this.store.select(selectCartItems), this.store.select(selectIsAuthenticated)),
-      tap(([{ productId }, currentItems, _]) => {
+      map(action => action.productId), // Extract productId
+      withLatestFrom(
+        this.store.select(selectCartItems),
+        this.store.select(selectIsAuthenticated)
+      ),
+      tap(([productId, currentItems, _]) => { // Use extracted productId
         const item = currentItems.find(item => item.productId === productId);
         if (item) {
           this.notificationService.showInfo(`${item.name} removed from cart`);
         }
       }),
-      exhaustMap(([{ productId }, currentItems, isAuthenticated]) => {
+      exhaustMap(([productId, currentItems, isAuthenticated]) => { // Use extracted productId
         const updatedItems = currentItems.filter(item => item.productId !== productId);
         this.storageService.setItem('cart', JSON.stringify(updatedItems));
 
@@ -110,8 +128,12 @@ export class CartEffects {
   updateCartItemQuantity$ = createEffect(() =>
     this.actions$.pipe(
       ofType(CartActions.updateCartItemQuantity),
-      withLatestFrom(this.store.select(selectCartItems), this.store.select(selectIsAuthenticated)),
-      exhaustMap(([{ productId, quantity }, currentItems, isAuthenticated]) => {
+      map(action => ({ productId: action.productId, quantity: action.quantity })), // Extract properties
+      withLatestFrom(
+        this.store.select(selectCartItems),
+        this.store.select(selectIsAuthenticated)
+      ),
+      exhaustMap(([{ productId, quantity }, currentItems, isAuthenticated]) => { // Use extracted properties
         const updatedItems = currentItems.map(item => 
           item.productId === productId ? { ...item, quantity } : item
         );
@@ -134,17 +156,17 @@ export class CartEffects {
     this.actions$.pipe(
       ofType(CartActions.clearCart),
       withLatestFrom(this.store.select(selectIsAuthenticated)),
-      exhaustMap(([_, isAuthenticated]) => {
-        this.storageService.removeItem('cart');
-        
+      exhaustMap(([action, isAuthenticated]) => {
         if (isAuthenticated) {
-          return this.cartService.clearCart().pipe(
-            map(() => CartActions.syncCartWithServerSuccess()),
-            catchError(error => of(CartActions.syncCartWithServerFailure({ error })))
+          // Simulate API call to clear backend cart
+          return of({ type: '[Cart API] Clear Cart Success - Backend (Placeholder)' }).pipe(
+            map(() => CartActions.loadCartSuccess({ items: [] })),
+            catchError(error => of({ type: '[Cart API] Clear Cart Failure - Backend', error }))
           );
+        } else {
+          // For non-authenticated users, just return success
+          return of(CartActions.loadCartSuccess({ items: [] }));
         }
-        
-        return of(CartActions.syncCartWithServerSuccess());
       })
     )
   );

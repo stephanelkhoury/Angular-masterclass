@@ -44,11 +44,11 @@
         
         <!-- Product Info -->
         <div class="product-info">
-          <div class="product-category">{{product.category.name}}</div>
+          <div class="product-category" *ngIf="product.category">{{product.category.name}}</div>
           <h1 class="product-name">{{product.name}}</h1>
           
           <div class="product-rating">
-            <app-star-rating [rating]="product.rating" [reviewCount]="product.reviews?.length || 0"></app-star-rating>
+            <app-star-rating [rating]="product.rating || 0" [reviewCount]="product.reviews?.length || 0"></app-star-rating>
           </div>
           
           <div class="product-price">
@@ -62,10 +62,10 @@
             </span>
           </div>
           
-          <div class="product-availability" [class.out-of-stock]="product.stockQuantity === 0">
-            <mat-icon>{{product.stockQuantity > 0 ? 'check_circle' : 'cancel'}}</mat-icon>
-            <span>{{product.stockQuantity > 0 ? 'In Stock' : 'Out of Stock'}}</span>
-            <span *ngIf="product.stockQuantity > 0 && product.stockQuantity < 10" class="low-stock">
+          <div class="product-availability" [class.out-of-stock]="(product.stockQuantity || 0) === 0">
+            <mat-icon>{{(product.stockQuantity || 0) > 0 ? 'check_circle' : 'cancel'}}</mat-icon>
+            <span>{{(product.stockQuantity || 0) > 0 ? 'In Stock' : 'Out of Stock'}}</span>
+            <span *ngIf="(product.stockQuantity || 0) > 0 && (product.stockQuantity || 0) < 10" class="low-stock">
               (Only {{product.stockQuantity}} left)
             </span>
           </div>
@@ -139,8 +139,8 @@
           <div class="tab-content">
             <h3>Product Specifications</h3>
             <table class="specs-table">
-              <tr *ngFor="let spec of product.specifications | keyvalue">
-                <th>{{spec.key | titlecase}}</th>
+              <tr *ngFor="let spec of (product.specifications || {}) | keyvalue">
+                <th>{{spec.key.toString() | titlecase}}</th>
                 <td>{{spec.value}}</td>
               </tr>
             </table>
@@ -165,9 +165,9 @@
           <app-product-card 
             *ngFor="let relatedProduct of (relatedProducts$ | async)" 
             [product]="relatedProduct"
-            (addToCart)="addToCart($event)"
-            (addToWishlist)="addToWishlist($event)"
-            (viewDetails)="updateSelectedImage(null)">
+            (productAddedToCart)="addToCart($event)"
+            (productAddedToWishlist)="addToWishlist(relatedProduct)"
+            (productViewed)="updateSelectedImage(null)">
           </app-product-card>
         </div>
       </section>

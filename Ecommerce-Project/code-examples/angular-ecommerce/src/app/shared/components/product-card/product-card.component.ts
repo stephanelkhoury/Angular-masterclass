@@ -1,18 +1,13 @@
-import { 
-  Component, 
-  Input, 
-  Output, 
-  EventEmitter, 
-  OnInit, 
-  OnDestroy, 
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  HostListener,
-  Inject,
-  Optional
-} from '@angular/core';
-import { Subject, interval, takeUntil, of } from 'rxjs';
-import { Product } from '../../../core/models/product.model';
+import { Component, OnInit, Input, Output, EventEmitter, ChangeDetectionStrategy, ChangeDetectorRef, OnChanges, SimpleChanges } from '@angular/core';
+import { Product, ProductImage } from '../../../core/models/product.model'; // Added ProductImage
+import { Store } from '@ngrx/store'; // Import Store
+import { AppState } from '../../../store'; // Assuming AppState is defined
+import * as CartActions from '../../../store/actions/cart.actions'; // Import CartActions
+import { Observable, of } from 'rxjs'; // Import Observable and of for isInWishlist$
+import { WishlistService } from '../../../core/services/wishlist.service'; // Assuming you have a WishlistService
+import { map } from 'rxjs/operators';
+import { CartItem } from '../../../core/models/cart-item.model'; // Import CartItem
+
 
 @Component({
   selector: 'app-product-card',
@@ -20,229 +15,313 @@ import { Product } from '../../../core/models/product.model';
   styleUrls: ['./product-card.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProductCardComponent implements OnInit, OnDestroy {
+export class ProductCardComponent implements OnInit, OnChanges {
   @Input() product!: Product;
-  @Input() showActions = true;
-  @Input() showQuantitySelector = false;
-  @Input() showBuyNow = false;
-  @Input() showPriceDetails = true;
-  @Input() showShippingInfo = true;
-  @Input() loading = 'lazy' as 'lazy' | 'eager';
+  @Input() currencySymbol: string = '$';
+  @Input() newThresholdDays: number = 7; // Days to consider a product "new"
+  
+  // Configuration for what to show
+  @Input() showNewBadge: boolean = true;
+  @Input() showFeaturedBadge: boolean = true;
+  @Input() showBestsellerBadge: boolean = true;
+  @Input() showSoldOutBadge: boolean = true;
+  @Input() showImageHoverControls: boolean = true;
+  @Input() showImageIndicators: boolean = true;
+  @Input() showStockIndicator: boolean = true;
+  @Input() showRating: boolean = true;
+  @Input() showShortDescription: boolean = false;
+  @Input() showKeyFeatures: boolean = false;
+  @Input() showShippingInfo: boolean = false;
+  @Input() cycleImagesOnHover: boolean = true;
+
+  // New Inputs for layout and specific button visibility
   @Input() size: 'small' | 'medium' | 'large' = 'medium';
+  @Input() showBuyNowButton: boolean = true;
+  @Input() showQuantityControl: boolean = true; // For controlling the +/- quantity input
   @Input() layout: 'vertical' | 'horizontal' = 'vertical';
 
-  @Output() addToCart = new EventEmitter<{product: Product, quantity: number}>();
-  @Output() addToWishlist = new EventEmitter<Product>();
-  @Output() removeFromWishlist = new EventEmitter<Product>();
-  @Output() addToCompare = new EventEmitter<Product>();
-  @Output() removeFromCompare = new EventEmitter<Product>();
-  @Output() viewDetails = new EventEmitter<Product>();
-  @Output() quickView = new EventEmitter<Product>();
-  @Output() buyNow = new EventEmitter<{product: Product, quantity: number}>();
-  @Output() imageClick = new EventEmitter<{product: Product, imageIndex: number}>();
 
-  // Component state
-  private destroy$ = new Subject<void>();
-  discountPercentage: number = 0;
-  discountAmount: number = 0;
-  selectedQuantity = 1;
-  currentImageIndex = 0;
-  addingToCart = false;
-  imageLoading = true;
-  imageError = false;
+  // Event Emitters - Renamed to avoid conflict with method names
+  @Output() productAddedToCart = new EventEmitter<{product: Product, quantity: number}>();
+  @Output() productAddedToWishlist = new EventEmitter<Product>();
+  @Output() productCompared = new EventEmitter<Product>();
+  @Output() productViewed = new EventEmitter<Product>(); // For quick view
+  @Output() productBoughtNow = new EventEmitter<{product: Product, quantity: number}>();
 
-  // Product status properties
-  isNewArrival = false;
+
+  isNew = false;
   isBestSeller = false;
   isLowStock = false;
-  isInWishlist = false;
-  isInCompare = false;
+  discountPercentage: number | null = null;
+  discountAmount: number | null = null;
+
+  currentImageIndex = 0;
+  private imageChangeInterval: any;
+
+  addingToCart = false;
+  addingToWishlistState = false; // Renamed to avoid conflict
+  uiShowQuantitySelector = false; // Renamed to avoid conflict
+  selectedQuantity: number = 1;
+
+  isInWishlist$: Observable<boolean> = of(false); // Default to false
+  isInCompare$: Observable<boolean> = of(false); // Placeholder for compare feature
+
 
   constructor(
+    private store: Store<AppState>, // Inject Store
+    private wishlistService: WishlistService, // Inject WishlistService
     private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
-    this.calculateDiscounts();
-    this.checkProductStatus();
-    this.initializeUserInteractions();
-    this.startImageCarousel();
+    this.updateProductFlags();
+    this.calculateDiscount();
+    if (this.product && this.product.id) { // Ensure product and product.id exist
+        this.isInWishlist$ = this.wishlistService.isInWishlist(this.product.id);
+        // this.isInCompare$ = this.compareService.isInCompare(this.product.id); // If you have a compare service
+    }
   }
 
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['product'] && this.product && this.product.id) { // Ensure product and product.id exist
+      this.updateProductFlags();
+      this.calculateDiscount();
+      this.selectedQuantity = 1; // Reset quantity when product changes
+      this.uiShowQuantitySelector = false;
+      this.isInWishlist$ = this.wishlistService.isInWishlist(this.product.id);
+      // this.isInCompare$ = this.compareService.isInCompare(this.product.id);
+      this.cdr.markForCheck();
+    }
   }
 
-  @HostListener('mouseenter')
-  onMouseEnter(): void {
-    // Optional: Preload additional product data on hover
+  private updateProductFlags(): void {
+    if (!this.product) return;
+
+    const now = new Date();
+    const productDate = this.product.createdAt ? new Date(this.product.createdAt) : now;
+    const diffTime = Math.abs(now.getTime() - productDate.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    this.isNew = diffDays <= (this.newThresholdDays || 7);
+
+    this.isBestSeller = !!this.product.featured ||
+                       ( (this.product.rating || 0) >= 4.5 && (this.product.reviews?.length || 0) >= 50); // Adjusted review count
+    
+    this.isLowStock = (this.product.stockQuantity || 0) > 0 && (this.product.stockQuantity || 0) <= 10;
   }
 
-  @HostListener('mouseleave')
-  onMouseLeave(): void {
-    // Reset any hover states if needed
-  }
-
-  private calculateDiscounts(): void {
+  private calculateDiscount(): void {
+    if (!this.product) {
+      this.discountPercentage = null;
+      this.discountAmount = null;
+      return;
+    }
     if (this.product.regularPrice && this.product.regularPrice > this.product.price) {
       this.discountPercentage = Math.round(
         ((this.product.regularPrice - this.product.price) / this.product.regularPrice) * 100
       );
       this.discountAmount = this.product.regularPrice - this.product.price;
+    } else {
+      this.discountPercentage = null;
+      this.discountAmount = null;
     }
   }
 
-  private checkProductStatus(): void {
-    const now = new Date();
-    const productDate = new Date(this.product.createdAt || now);
-    const daysDiff = Math.floor((now.getTime() - productDate.getTime()) / (1000 * 60 * 60 * 24));
-    
-    // Check if new arrival (less than 30 days old)
-    this.isNewArrival = daysDiff <= 30;
-    
-    // Check if bestseller (based on sales or rating)
-    this.isBestSeller = this.product.featured || 
-                       (this.product.rating >= 4.5 && (this.product.reviews?.length || 0) >= 100);
-    
-    // Check if low stock
-    this.isLowStock = this.product.stockQuantity > 0 && this.product.stockQuantity <= 10;
-  }
-
-  private initializeUserInteractions(): void {
-    // These would be connected to actual services in a real implementation
-    // For now, we'll use mock values
-    this.isInWishlist = false;
-    this.isInCompare = false;
-  }
-
-  private startImageCarousel(): void {
-    if (this.product.images && this.product.images.length > 1) {
-      // Auto-rotate images on hover (optional)
-      interval(3000)
-        .pipe(takeUntil(this.destroy$))
-        .subscribe(() => {
-          if (this.product.images && this.product.images.length > 1) {
-            this.currentImageIndex = (this.currentImageIndex + 1) % this.product.images.length;
-            this.cdr.markForCheck();
-          }
-        });
+  // Mouse enter/leave handlers for image cycling
+  onMouseEnter(): void {
+    if (this.cycleImagesOnHover) {
+      this.startImageCycle();
     }
   }
 
-  // Event handlers
-  onAddToCart(): void {
-    if (this.product.stockQuantity === 0 || this.addingToCart) return;
+  onMouseLeave(): void {
+    if (this.cycleImagesOnHover) {
+      this.stopImageCycle();
+    }
+  }
+  
+  startImageCycle(): void {
+    if (this.cycleImagesOnHover && this.product?.images && this.product.images.length > 1) {
+      this.stopImageCycle(); // Clear existing interval
+      this.imageChangeInterval = setInterval(() => {
+        if (this.product.images && this.product.images.length > 1) {
+          this.currentImageIndex = (this.currentImageIndex + 1) % this.product.images.length;
+          this.cdr.markForCheck(); // Trigger change detection
+        }
+      }, 2000); // Change image every 2 seconds
+    }
+  }
 
-    this.addingToCart = true;
-    this.cdr.markForCheck();
+  stopImageCycle(): void {
+    if (this.imageChangeInterval) {
+      clearInterval(this.imageChangeInterval);
+      this.imageChangeInterval = null;
+    }
+  }
+  
+  // Image navigation
+  prevImage(event: MouseEvent): void {
+    event.stopPropagation();
+    if (this.product?.images && this.product.images.length > 0) {
+      this.currentImageIndex = (this.currentImageIndex - 1 + this.product.images.length) % this.product.images.length;
+    }
+  }
 
-    // Simulate API call delay
+  nextImage(event: MouseEvent): void {
+    event.stopPropagation();
+    if (this.product?.images && this.product.images.length > 0) {
+      this.currentImageIndex = (this.currentImageIndex + 1) % this.product.images.length;
+    }
+  }
+  
+  setImage(index: number, event: MouseEvent): void {
+    event.stopPropagation();
+    this.currentImageIndex = index;
+  }
+
+  onImageError(event: Event): void {
+    const imgElement = event.target as HTMLImageElement;
+    imgElement.src = 'assets/images/placeholder.png'; // Fallback image
+  }
+
+
+  // Action Methods
+  addToCartHandler(event: MouseEvent): void {
+    event.stopPropagation();
+    if (!this.product || (this.product.stockQuantity || 0) === 0 || this.addingToCart) return;
+
+        this.addingToCart = true;
+    const cartItem: CartItem = {
+      productId: this.product.id,
+      quantity: this.selectedQuantity,
+      name: this.product.name,
+      price: this.product.discountPrice || this.product.price,
+      unitPrice: this.product.discountPrice || this.product.price,
+      image: this.product.imageUrl || (this.product.images && this.product.images[0]?.url) || ''
+    };
+    // Simulate API call
     setTimeout(() => {
-      this.addToCart.emit({
-        product: this.product,
-        quantity: this.selectedQuantity
-      });
+      this.store.dispatch(CartActions.addToCart({ item: cartItem }));
+      this.productAddedToCart.emit({product: this.product, quantity: this.selectedQuantity});
       this.addingToCart = false;
+      this.uiShowQuantitySelector = false; // Hide quantity selector after adding
+      this.selectedQuantity = 1; // Reset quantity
       this.cdr.markForCheck();
     }, 500);
   }
 
-  onToggleWishlist(event: Event): void {
+  addToWishlistHandler(event: MouseEvent): void { // Renamed method
     event.stopPropagation();
-    event.preventDefault();
+    if (!this.product || this.addingToWishlistState) return;
 
-    if (this.isInWishlist) {
-      this.removeFromWishlist.emit(this.product);
-      this.isInWishlist = false;
-    } else {
-      this.addToWishlist.emit(this.product);
-      this.isInWishlist = true;
-    }
-    this.cdr.markForCheck();
-  }
-
-  onToggleCompare(event: Event): void {
-    event.stopPropagation();
-    event.preventDefault();
-
-    if (this.isInCompare) {
-      this.removeFromCompare.emit(this.product);
-      this.isInCompare = false;
-    } else {
-      this.addToCompare.emit(this.product);
-      this.isInCompare = true;
-    }
-    this.cdr.markForCheck();
-  }
-
-  onQuickView(event: Event): void {
-    event.stopPropagation();
-    event.preventDefault();
-    this.quickView.emit(this.product);
-  }
-
-  onViewDetails(): void {
-    this.viewDetails.emit(this.product);
-  }
-
-  onBuyNow(): void {
-    if (this.product.stockQuantity === 0) return;
-
-    this.buyNow.emit({
-      product: this.product,
-      quantity: this.selectedQuantity
+    this.addingToWishlistState = true;
+    // Assuming WishlistService has a method like toggleWishlistItem or add/remove
+    // For now, let's assume toggleWishlist exists and works as intended.
+    // If toggleWishlist is not the correct method, this needs to be adjusted based on WishlistService's API.
+    this.wishlistService.toggleWishlist(this.product.id).subscribe(() => {
+        this.productAddedToWishlist.emit(this.product);
+        this.addingToWishlistState = false;
+        if (this.product && this.product.id) { // Re-check after ensuring product.id exists
+             this.isInWishlist$ = this.wishlistService.isInWishlist(this.product.id);
+        }
+        this.cdr.markForCheck();
     });
   }
-
-  onQuantityChange(quantity: number): void {
-    this.selectedQuantity = quantity;
-  }
-
-  changeImage(index: number, event: Event): void {
+  
+  compareProductHandler(event: MouseEvent): void {
     event.stopPropagation();
-    event.preventDefault();
-    this.currentImageIndex = index;
-    this.imageClick.emit({
-      product: this.product,
-      imageIndex: index
-    });
-  }
-
-  onImageLoad(): void {
-    this.imageLoading = false;
-    this.imageError = false;
+    if (!this.product) return;
+    this.productCompared.emit(this.product);
+    // Add logic for compare service if available
+    // this.isInCompare$ = this.compareService.toggleCompare(this.product.id);
     this.cdr.markForCheck();
   }
 
-  onImageError(): void {
-    this.imageLoading = false;
-    this.imageError = true;
+  viewProductHandler(event: MouseEvent): void {
+    event.stopPropagation();
+    if (!this.product) return;
+    this.productViewed.emit(this.product);
+    // Logic for opening a quick view modal, for example
+  }
+
+
+  buyNowHandler(event: MouseEvent): void {
+    event.stopPropagation();
+    if (!this.product || (this.product.stockQuantity || 0) === 0) return;
+    
+        const cartItem: CartItem = {
+      productId: this.product.id,
+      quantity: this.selectedQuantity,
+      name: this.product.name,
+      price: this.product.discountPrice || this.product.price,
+      unitPrice: this.product.discountPrice || this.product.price,
+      image: this.product.imageUrl || (this.product.images && this.product.images[0]?.url) || ''
+    };
+    this.store.dispatch(CartActions.addToCart({ item: cartItem }));
+    this.productBoughtNow.emit({product: this.product, quantity: this.selectedQuantity});
+    // Typically, you'd navigate to checkout here or dispatch another action
+    // If 'navigateToCheckout' is not a standard action, you might need to implement custom navigation
+    // or a specific NGRX effect that handles this. For now, commenting out if it causes issues.
+    // this.store.dispatch(CartActions.navigateToCheckout()); 
+    console.log('Buy Now: Navigating to checkout (placeholder)');
     this.cdr.markForCheck();
   }
 
-  // Getter methods for template
-  get currentImage(): string {
-    if (this.product.images && this.product.images.length > 0) {
-      return this.product.images[this.currentImageIndex] || this.product.imageUrl;
+  toggleQuantitySelectorHandler(event: MouseEvent): void { // Renamed method
+    event.stopPropagation();
+    if ((this.product?.stockQuantity || 0) === 0) return;
+    this.uiShowQuantitySelector = !this.uiShowQuantitySelector;
+  }
+
+  onQuantityChange(): void {
+    if (this.selectedQuantity < 1) {
+      this.selectedQuantity = 1;
     }
-    return this.product.imageUrl;
+    if (this.product?.stockQuantity && this.selectedQuantity > this.product.stockQuantity) {
+      this.selectedQuantity = this.product.stockQuantity;
+    }
   }
 
-  get stockStatus(): 'in-stock' | 'low-stock' | 'out-of-stock' {
-    if (this.product.stockQuantity === 0) return 'out-of-stock';
-    if (this.product.stockQuantity <= 10) return 'low-stock';
+  incrementQuantity(event: MouseEvent): void {
+    event.stopPropagation();
+    if (this.product?.stockQuantity && this.selectedQuantity < this.product.stockQuantity) {
+      this.selectedQuantity++;
+    }
+  }
+
+  decrementQuantity(event: MouseEvent): void {
+    event.stopPropagation();
+    if (this.selectedQuantity > 1) {
+      this.selectedQuantity--;
+    }
+  }
+
+  get currentDisplayImage(): string {
+    if (this.product?.images && this.product.images.length > 0 && this.product.images[this.currentImageIndex]?.url) {
+      return this.product.images[this.currentImageIndex].url;
+    }
+    return this.product?.imageUrl || 'assets/images/placeholder.png';
+  }
+
+  get stockStatusClass(): string {
+    if ((this.product?.stockQuantity || 0) === 0) return 'out-of-stock';
+    if ((this.product?.stockQuantity || 0) <= 10 && (this.product?.stockQuantity || 0) > 0) return 'low-stock'; // Fixed condition
     return 'in-stock';
   }
 
   get cardClasses(): string[] {
-    const classes = [`product-card--${this.size}`, `product-card--${this.layout}`];
-    
-    if (this.product.featured) classes.push('product-card--featured');
-    if (this.isNewArrival) classes.push('product-card--new');
-    if (this.isBestSeller) classes.push('product-card--bestseller');
-    if (this.discountPercentage > 0) classes.push('product-card--on-sale');
-    
+    const classes = ['product-card'];
+    if (this.product?.featured) {
+      classes.push('product-card--featured');
+    }
+    if (this.isNew) {
+      classes.push('product-card--new');
+    }
+    if (this.isBestSeller) {
+      classes.push('product-card--bestseller');
+    }
+    if ((this.product?.stockQuantity || 0) === 0) {
+      classes.push('product-card--out-of-stock');
+    }
     return classes;
   }
 }

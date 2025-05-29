@@ -10,6 +10,7 @@ import { Product, Category } from '../../core/models/product.model';
 import { ProductService } from '../../core/services/product.service';
 import { CartService } from '../../core/services/cart.service';
 import { NotificationService } from '../../core/services/notification.service';
+import * as ProductActions from '../../store/actions/product.actions';
 
 interface ProductFilters {
   [key: string]: string | number | undefined;
@@ -49,7 +50,7 @@ export class ProductsComponent implements OnInit, OnDestroy {
   ) {
     this.products$ = this.store.select(state => state.products.items);
     this.categories$ = this.store.select(state => state.products.categories);
-    this.loading$ = this.store.select(state => state.ui.loading);
+    this.loading$ = this.store.select(state => state.products.loading);
     
     // Create filtered products stream
     this.filteredProducts$ = combineLatest([
@@ -76,9 +77,20 @@ export class ProductsComponent implements OnInit, OnDestroy {
   }
   
   ngOnInit(): void {
-    // Load products and categories
-    this.productService.loadProducts();
-    this.productService.loadCategories();
+    console.log('ProductsComponent: ngOnInit - dispatching actions');
+    // Dispatch actions to load products and categories
+    this.store.dispatch(ProductActions.loadProducts({}));
+    this.store.dispatch(ProductActions.loadCategories());
+    
+    // Subscribe to products for debugging
+    this.products$.subscribe(products => {
+      console.log('ProductsComponent: products updated', products);
+    });
+    
+    // Subscribe to loading state for debugging
+    this.loading$.subscribe(loading => {
+      console.log('ProductsComponent: loading state', loading);
+    });
     
     // Handle search input with debounce
     this.searchControl.valueChanges.pipe(
@@ -184,7 +196,7 @@ export class ProductsComponent implements OnInit, OnDestroy {
     
     // Filter by rating
     if (filters.rating !== undefined) {
-      filtered = filtered.filter(product => product.rating >= filters.rating!);
+      filtered = filtered.filter(product => (product.rating || 0) >= filters.rating!);
     }
     
     // Filter by search term
@@ -207,12 +219,14 @@ export class ProductsComponent implements OnInit, OnDestroy {
           filtered.sort((a, b) => b.price - a.price);
           break;
         case 'rating':
-          filtered.sort((a, b) => b.rating - a.rating);
+          filtered.sort((a, b) => (b.rating || 0) - (a.rating || 0));
           break;
         case 'newest':
-          filtered.sort((a, b) => 
-            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-          );
+          filtered.sort((a, b) => {
+            const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+            const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+            return dateB - dateA;
+          });
           break;
         case 'popularity':
           filtered.sort((a, b) => (b.reviews?.length || 0) - (a.reviews?.length || 0));
@@ -221,5 +235,27 @@ export class ProductsComponent implements OnInit, OnDestroy {
     }
     
     return filtered;
+  }
+  
+  testApiCall(): void {
+    console.log('Manual test: Calling ProductService.getProducts directly');
+    this.productService.getProducts({}).subscribe({
+      next: (response) => {
+        console.log('Manual test: Direct API call successful:', response);
+      },
+      error: (error) => {
+        console.error('Manual test: Direct API call failed:', error);
+      }
+    });
+    
+    console.log('Manual test: Calling ProductService.getCategories directly');
+    this.productService.getCategories().subscribe({
+      next: (categories) => {
+        console.log('Manual test: Direct categories call successful:', categories);
+      },
+      error: (error) => {
+        console.error('Manual test: Direct categories call failed:', error);
+      }
+    });
   }
 }

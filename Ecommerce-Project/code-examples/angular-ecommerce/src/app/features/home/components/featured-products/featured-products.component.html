@@ -7,29 +7,27 @@
   </div>
   
   <div class="products-grid">
-    <ng-container *ngIf="(products$ | async) as products">
-      <div *ngIf="products.length > 0; else noProducts" class="products-container">
-        <div *ngFor="let product of products" class="product-card-wrapper">
-          <app-product-card 
-            [product]="product"
-            (addToCart)="onAddToCart($event)"
-            (addToWishlist)="onAddToWishlist($event)"
-            (viewDetails)="onViewDetails($event)">
-          </app-product-card>
-        </div>
-      </div>
-      
-      <ng-template #noProducts>
-        <div class="no-products-message">
-          <mat-icon>info</mat-icon>
-          <p>No featured products available at the moment.</p>
-        </div>
-      </ng-template>
-    </ng-container>
-    
-    <!-- Loading State -->
-    <div *ngIf="loading$ | async" class="loading-container">
-      <app-loading-spinner [diameter]="40"></app-loading-spinner>
+    <div *ngIf="products && products.length > 0; else noProducts" 
+         [ngClass]="{'product-grid': layout === 'grid', 'product-carousel': layout === 'carousel'}">
+      <app-product-card 
+        *ngFor="let product of products; trackBy: trackByProductId"
+        [product]="product"
+        [showNewBadge]="true"
+        [showFeaturedBadge]="true"
+        [showRating]="true"
+        [showShortDescription]="false"
+        [showBuyNowButton]="true"
+        [showQuantityControl]="false" 
+        (productAddedToCart)="onAddToCart($event)"
+        (productAddedToWishlist)="onAddToWishlist($event)"
+        (productViewed)="onViewDetails($event)">
+      </app-product-card>
     </div>
+    
+    <ng-template #noProducts>
+      <div class="no-products-message">
+        <p>No featured products available at the moment. Check back soon!</p>
+      </div>
+    </ng-template>
   </div>
 </div>

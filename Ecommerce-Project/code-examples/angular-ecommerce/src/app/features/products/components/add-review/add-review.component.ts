@@ -119,8 +119,8 @@ export class AddReviewComponent {
         rating: this.reviewForm.value.rating,
         title: this.reviewForm.value.title,
         comment: this.reviewForm.value.content,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
+        createdAt: new Date(),
+        updatedAt: new Date()
       };
       
       this.reviewSubmitted.emit(review);

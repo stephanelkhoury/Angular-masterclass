@@ -6,7 +6,8 @@ import { catchError, map } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { NotificationService } from './notification.service';
 import { MockDataService } from './mock-data.service';
-import { Product, Category, Review } from '../models/product.model';
+import { FakeStoreApiService } from './fake-store-api.service';
+import { Product, Category, Review, PaginatedResponse } from '../models/product.model';
 
 @Injectable({
   providedIn: 'root'
@@ -15,10 +16,14 @@ export class ProductService {
   private apiUrl = `${environment.apiUrl}/products`;
   private categoriesUrl = `${environment.apiUrl}/categories`;
   
+  // This local mockProducts is likely not used if mockDataService is primary for mocks.
+  // private mockProducts: Product[] = [ ... ]; 
+  
   constructor(
     private http: HttpClient,
     private notificationService: NotificationService,
-    private mockDataService: MockDataService
+    private mockDataService: MockDataService,
+    private fakeStoreApiService: FakeStoreApiService
   ) {}
 
   getProducts(options: {
@@ -26,40 +31,94 @@ export class ProductService {
     limit?: number;
     sortBy?: string;
     order?: 'asc' | 'desc';
-    category?: string;
+    category?: string; // This could be category ID or name
+    subcategory?: string; 
     minPrice?: number;
     maxPrice?: number;
     search?: string;
-  } = {}): Observable<{ products: Product[]; totalCount: number; page: number; limit: number }> {
+  } = {}): Observable<PaginatedResponse<Product>> { // Changed return type
     
-    // Use mock data in development
-    if (environment.useMockData) {
-      return this.mockDataService.getProducts(options);
+    console.log('ProductService: getProducts called with options:', options);
+    console.log('ProductService: Environment flags:', {
+      useFakeStoreApi: environment.useFakeStoreApi,
+      useMockData: environment.useMockData
+    });
+    
+    // Check if we should use Fake Store API
+    if (environment.useFakeStoreApi) {
+      console.log('ProductService: Using Fake Store API');
+      return this.fakeStoreApiService.getProducts(options);
     }
+    
+    if (environment.useMockData) {
+      console.log('ProductService: Using Mock Data');
+      // Assuming mockDataService.getProducts returns PaginatedResponse<Product>
+      return this.mockDataService.getProducts(options); 
+    }
+    
+    console.log('ProductService: Using real API');
     
     let params = new HttpParams();
     
-    if (options.page) params = params.set('page', options.page.toString());
-    if (options.limit) params = params.set('limit', options.limit.toString());
-    if (options.sortBy) params = params.set('sortBy', options.sortBy);
-    if (options.order) params = params.set('order', options.order);
-    if (options.category) params = params.set('category', options.category);
-    if (options.minPrice) params = params.set('minPrice', options.minPrice.toString());
-    if (options.maxPrice) params = params.set('maxPrice', options.maxPrice.toString());
-    if (options.search) params = params.set('search', options.search);
+    if (options.page) params = params.set('_page', options.page.toString()); // Common API convention
+    if (options.limit) params = params.set('_limit', options.limit.toString()); // Common API convention
+    if (options.sortBy) params = params.set('_sort', options.sortBy);
+    if (options.order) params = params.set('_order', options.order);
+    if (options.category) params = params.set('categoryId', options.category); // Assuming API filters by categoryId
+    if (options.subcategory) params = params.set('subcategoryName', options.subcategory); // Example: API might filter by subcategoryName
+    if (options.minPrice) params = params.set('price_gte', options.minPrice.toString());
+    if (options.maxPrice) params = params.set('price_lte', options.maxPrice.toString());
+    if (options.search) params = params.set('q', options.search); // Common API convention for search
     
-    return this.http.get<{ products: Product[]; totalCount: number; page: number; limit: number }>(
-      this.apiUrl,
-      { params }
-    ).pipe(
+    // For a real API, the response might already be PaginatedResponse or you might need to map it.
+    // If API returns Product[] and headers for totalCount:
+    return this.http.get<Product[]>(this.apiUrl, { params, observe: 'response' }).pipe(
+      map(response => {
+        const items = response.body || [];
+        const totalCountHeader = response.headers.get('X-Total-Count');
+        const totalCount = totalCountHeader ? +totalCountHeader : items.length;
+        return {
+          items: items,
+          totalCount: totalCount,
+          page: options.page || 1,
+          limit: options.limit || items.length, // Or a default limit
+          totalPages: options.limit ? Math.ceil(totalCount / options.limit) : 1
+        };
+      }),
       catchError(this.handleError('Failed to load products'))
     );
   }
 
   getProductById(id: string): Observable<Product> {
+    console.log('ProductService: getProductById called with id:', id);
+    console.log('ProductService: Environment flags:', {
+      useFakeStoreApi: environment.useFakeStoreApi,
+      useMockData: environment.useMockData
+    });
+    
+    // Check if we should use Fake Store API
+    if (environment.useFakeStoreApi) {
+      console.log('ProductService: Using Fake Store API for product by ID');
+      return this.fakeStoreApiService.getProductById(id).pipe(
+        map(product => {
+          if (!product) {
+            throw new Error('Product not found');
+          }
+          return product;
+        })
+      );
+    }
+    
     // Use mock data in development
     if (environment.useMockData) {
-      return this.mockDataService.getProductById(id);
+      return this.mockDataService.getProductById(id).pipe(
+        map(product => {
+          if (!product) {
+            throw new Error('Product not found');
+          }
+          return product;
+        })
+      );
     }
     
     return this.http.get<Product>(`${this.apiUrl}/${id}`).pipe(
@@ -68,6 +127,11 @@ export class ProductService {
   }
 
   getCategories(): Observable<Category[]> {
+    // Check if we should use Fake Store API
+    if (environment.useFakeStoreApi) {
+      return this.fakeStoreApiService.getCategories();
+    }
+    
     // Use mock data in development
     if (environment.useMockData) {
       return this.mockDataService.getCategories();
@@ -106,16 +170,15 @@ export class ProductService {
     );
   }
 
-  getFeaturedProducts(limit = 8): Observable<Product[]> {
-    // Use mock data in development
+  getFeaturedProducts(limit = 8): Observable<Product[]> { // This typically returns just an array
     if (environment.useMockData) {
       return this.mockDataService.getFeaturedProducts(limit);
     }
     
-    const params = new HttpParams().set('limit', limit.toString()).set('featured', 'true');
+    const params = new HttpParams().set('_limit', limit.toString()).set('featured', 'true');
     
-    return this.http.get<{ products: Product[] }>(this.apiUrl, { params }).pipe(
-      map(response => response.products),
+    // Assuming API returns Product[] directly for this specific endpoint
+    return this.http.get<Product[]>(this.apiUrl, { params }).pipe(
       catchError(this.handleError('Failed to load featured products'))
     );
   }
@@ -160,10 +223,8 @@ export class ProductService {
   }
 
   // Store management methods
-  loadProducts(): Observable<Product[]> {
-    return this.getProducts().pipe(
-      map(response => response.products)
-    );
+  loadProducts(): Observable<PaginatedResponse<Product>> { // Align with getProducts return type
+    return this.getProducts(); // Now returns PaginatedResponse
   }
 
   loadCategories(): Observable<Category[]> {

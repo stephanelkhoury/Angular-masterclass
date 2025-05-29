@@ -14,7 +14,7 @@ import { CartService } from '../../../core/services/cart.service';
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
-  styleUrls: ['./header.component.scss']
+  styleUrls: ['./header.component.scss'] // <-- Make sure this matches your SCSS filename
 })
 export class HeaderComponent implements OnInit {
   isLoggedIn$: Observable<boolean>;
@@ -42,6 +42,9 @@ export class HeaderComponent implements OnInit {
   showMobileMenu = false;
   megaMenuOpen = false;
   showMobileCategories = false;
+
+  // Scroll state
+  isScrolled = false;
 
   // Categories for mega menu
   categories = [
@@ -134,6 +137,11 @@ export class HeaderComponent implements OnInit {
     });
   }
 
+  @HostListener('window:scroll', [])
+  onWindowScroll() {
+    this.isScrolled = window.pageYOffset > 50;
+  }
+
   @HostListener('window:resize', ['$event'])
   onResize(event: any): void {
     this.detectMobile();
@@ -146,8 +154,10 @@ export class HeaderComponent implements OnInit {
       this.showSearchSuggestions = false;
     }
     // Close mega menu when clicking outside
-    if (!event.target.closest('.mega-menu-trigger') && !event.target.closest('.mega-menu')) {
-      this.megaMenuOpen = false;
+    // Ensure that the click is not on the mega-menu-trigger link itself if it's used for toggling
+    if (!event.target.closest('.mega-menu-trigger > .nav-link') && 
+        !event.target.closest('.mega-menu-trigger .mega-menu')) {
+      this.closeMegaMenu();
     }
   }
 
@@ -255,8 +265,23 @@ export class HeaderComponent implements OnInit {
   }
 
   // Mega menu
-  toggleMegaMenu(): void {
-    this.megaMenuOpen = !this.megaMenuOpen;
+  openMegaMenu(): void {
+    if (!this.isMobile) { // Mega menu is for desktop
+      this.megaMenuOpen = true;
+    }
+  }
+
+  closeMegaMenu(): void {
+    if (!this.isMobile) {
+      this.megaMenuOpen = false;
+    }
+  }
+
+  toggleMegaMenuOnClick(event: MouseEvent): void {
+    if (!this.isMobile) {
+      event.stopPropagation(); // Prevent document click from closing it immediately
+      this.megaMenuOpen = !this.megaMenuOpen;
+    }
   }
 
   // Navigation methods
@@ -265,7 +290,7 @@ export class HeaderComponent implements OnInit {
       queryParams: { category: category.toLowerCase() } 
     });
     this.closeMobileMenu();
-    this.megaMenuOpen = false;
+    this.closeMegaMenu();
   }
 
   navigateToSubcategory(subcategory: string): void {
@@ -273,7 +298,7 @@ export class HeaderComponent implements OnInit {
       queryParams: { subcategory: subcategory.toLowerCase() } 
     });
     this.closeMobileMenu();
-    this.megaMenuOpen = false;
+    this.closeMegaMenu();
   }
 
   navigateToWishlist(): void {
@@ -335,5 +360,6 @@ export class HeaderComponent implements OnInit {
     this.authService.logout();
     this.router.navigate(['/']);
     this.closeMobileMenu();
+    this.closeMegaMenu();
   }
 }

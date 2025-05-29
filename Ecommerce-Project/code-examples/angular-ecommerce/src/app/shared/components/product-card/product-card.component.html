@@ -1,190 +1,154 @@
-<div class="product-card" 
-     [class.out-of-stock]="product.stockQuantity === 0"
+<mat-card [ngClass]="cardClasses" class="product-card-item" 
+     [class.out-of-stock]="(product.stockQuantity || 0) === 0"
      [class.featured]="product.featured"
-     [class.new-arrival]="isNewArrival"
-     [class.best-seller]="isBestSeller">
-     
-  <!-- Product Badges -->
-  <div class="product-badges">
-    <div class="badge discount-badge" *ngIf="discountPercentage > 0">
-      <mat-icon>local_offer</mat-icon>
-      <span>{{discountPercentage}}% OFF</span>
+     (mouseenter)="onMouseEnter()" 
+     (mouseleave)="onMouseLeave()">
+
+  <div class="product-card-header">
+    <a [routerLink]="['/products', product.id]" class="product-image-link">
+      <img mat-card-image [src]="currentDisplayImage" [alt]="product.name" 
+           class="product-image" loading="lazy"
+           (error)="onImageError($event)">
+    </a>
+    <!-- Badges -->
+    <div class="badges-container">
+      <div class="badge discount-badge" *ngIf="discountPercentage !== null && discountPercentage > 0">
+        -{{ discountPercentage }}%
+      </div>
+      <div class="badge new-badge" *ngIf="isNew && showNewBadge">NEW</div>
+      <div class="badge featured-badge" *ngIf="product?.featured && showFeaturedBadge">FEATURED</div>
+      <div class="badge bestseller-badge" *ngIf="isBestSeller && showBestsellerBadge">BESTSELLER</div>
+      <div class="badge sold-out-badge" *ngIf="(product?.stockQuantity || 0) === 0 && showSoldOutBadge">SOLD OUT</div>
     </div>
-    <div class="badge new-badge" *ngIf="isNewArrival">
-      <mat-icon>fiber_new</mat-icon>
-      <span>NEW</span>
+
+    <!-- Quick Actions -->
+    <div class="quick-actions">
+      <button mat-icon-button class="action-btn" 
+              (click)="addToWishlistHandler($event)" 
+              [disabled]="addingToWishlistState"
+              matTooltip="Add to Wishlist" aria-label="Add to wishlist">
+        <mat-icon>{{ (isInWishlist$ | async) ? 'favorite' : 'favorite_border' }}</mat-icon>
+      </button>
+      <button mat-icon-button class="action-btn" 
+              (click)="viewProductHandler($event)"
+              matTooltip="Quick View" aria-label="Quick view product">
+        <mat-icon>visibility</mat-icon>
+      </button>
+      <button mat-icon-button class="action-btn" 
+              (click)="compareProductHandler($event)"
+              [matTooltip]="(isInCompare$ | async) ? 'Remove from compare' : 'Add to compare'" 
+              aria-label="Compare product">
+        <mat-icon>{{ (isInCompare$ | async) ? 'check_circle' : 'compare_arrows' }}</mat-icon>
+      </button>
     </div>
-    <div class="badge bestseller-badge" *ngIf="isBestSeller">
-      <mat-icon>star</mat-icon>
-      <span>BESTSELLER</span>
+
+    <!-- Image hover controls -->
+    <div class="image-hover-controls" *ngIf="product?.images && (product.images?.length || 0) > 1 && showImageHoverControls">
+      <button mat-icon-button class="hover-control prev" (click)="prevImage($event)" aria-label="Previous image">
+        <mat-icon>chevron_left</mat-icon>
+      </button>
+      <button mat-icon-button class="hover-control next" (click)="nextImage($event)" aria-label="Next image">
+        <mat-icon>chevron_right</mat-icon>
+      </button>
     </div>
-    <div class="badge featured-badge" *ngIf="product.featured">
-      <mat-icon>verified</mat-icon>
-      <span>FEATURED</span>
+    
+    <!-- Image Indicators -->
+    <div class="image-indicators" *ngIf="product?.images && (product.images?.length || 0) > 1 && showImageIndicators">
+      <span class="indicator-dot" 
+            *ngFor="let image of product.images; let i = index"
+            [class.active]="i === currentImageIndex"
+            (click)="setImage(i, $event)"></span>
     </div>
-    <div class="badge sold-out-badge" *ngIf="product.stockQuantity === 0">
-      <mat-icon>block</mat-icon>
-      <span>SOLD OUT</span>
-    </div>
-    <div class="badge low-stock-badge" *ngIf="isLowStock">
-      <mat-icon>warning</mat-icon>
-      <span>LOW STOCK</span>
+
+    <!-- Stock Indicator -->
+    <div class="stock-indicator" *ngIf="showStockIndicator && product?.stockQuantity !== undefined && (product?.stockQuantity || 0) > 0 && (product?.stockQuantity || 0) <= 10">
+      <div class="stock-bar">
+        <div class="stock-fill" [style.width.%]="((product.stockQuantity || 0) / 10) * 100"></div>
+      </div>
+      <span class="stock-text" *ngIf="product?.stockQuantity">Only {{product.stockQuantity}} left</span>
     </div>
   </div>
 
-  <!-- Quick Action Buttons -->
-  <div class="quick-actions">
-    <button mat-mini-fab
-            class="quick-action-btn wishlist-btn"
-            [class.active]="isInWishlist"
-            (click)="onToggleWishlist($event)"
-            [attr.aria-label]="isInWishlist ? 'Remove from wishlist' : 'Add to wishlist'"
-            matTooltip="{{isInWishlist ? 'Remove from wishlist' : 'Add to wishlist'}}">
-      <mat-icon>{{isInWishlist ? 'favorite' : 'favorite_border'}}</mat-icon>
-    </button>
-    
-    <button mat-mini-fab
-            class="quick-action-btn compare-btn"
-            [class.active]="isInCompare"
-            (click)="onToggleCompare($event)"
-            [attr.aria-label]="isInCompare ? 'Remove from compare' : 'Add to compare'"
-            matTooltip="{{isInCompare ? 'Remove from compare' : 'Add to compare'}}">
-      <mat-icon>{{isInCompare ? 'compare_arrows' : 'compare_arrows'}}</mat-icon>
-    </button>
-    
-    <button mat-mini-fab
-            class="quick-action-btn quick-view-btn"
-            (click)="onQuickView($event)"
-            aria-label="Quick view"
-            matTooltip="Quick view">
-      <mat-icon>visibility</mat-icon>
-    </button>
-  </div>
-  
-  <!-- Product Image Container -->
-  <div class="product-image-container" (click)="onViewDetails()">
-    <div class="image-overlay"></div>
-    <img [src]="product.imageUrl" 
-         [alt]="product.name" 
-         class="product-image" 
-         [loading]="loading"
-         (load)="onImageLoad()"
-         (error)="onImageError()">
-    
-    <!-- Multiple images indicator -->
-    <div class="image-indicators" *ngIf="product.images && product.images.length > 1">
-      <span class="indicator" 
-            *ngFor="let image of product.images; let i = index"
-            [class.active]="i === currentImageIndex"
-            (click)="changeImage(i, $event)"></span>
-    </div>
-    
-    <!-- Stock level indicator -->
-    <div class="stock-indicator" *ngIf="product.stockQuantity > 0 && product.stockQuantity <= 10">
-      <div class="stock-bar">
-        <div class="stock-fill" [style.width.%]="(product.stockQuantity / 10) * 100"></div>
-      </div>
-      <span class="stock-text">Only {{product.stockQuantity}} left</span>
-    </div>
-  </div>
-  
-  <!-- Product Content -->
-  <div class="product-content">
-    <!-- Category and Brand -->
+  <mat-card-content class="product-card-content">
     <div class="product-meta">
-      <span class="product-category">{{product.category.name}}</span>
-      <span class="product-brand" *ngIf="product.brand">{{product.brand}}</span>
+      <span class="product-brand" *ngIf="product?.brand">{{product.brand}}</span>
+      <span class="product-category" *ngIf="product.category && product.category.name">{{product.category.name}}</span>
     </div>
+
+    <a [routerLink]="['/products', product.id]" class="product-name-link">
+      <h3 class="product-name" matTooltip="{{product.name}}">{{product.name}}</h3>
+    </a>
     
-    <!-- Product Name -->
-    <h3 class="product-name" 
-        (click)="onViewDetails()"
-        [attr.aria-label]="product.name">
-      {{product.name}}
-    </h3>
-    
-    <!-- Rating and Reviews -->
-    <div class="product-rating">
+    <div class="product-rating" *ngIf="showRating && product?.rating !== undefined && (product?.rating || 0) > 0">
       <app-star-rating 
-        [rating]="product.rating" 
+        [rating]="product.rating || 0" 
         [reviewCount]="product.reviews?.length || 0"
-        [size]="'small'"
-        [showCount]="true">
+        [readOnly]="true">
       </app-star-rating>
     </div>
-    
-    <!-- Price Section -->
-    <div class="product-price">
-      <div class="price-main">
-        <span class="current-price">{{product.price | currency}}</span>
-        <span class="regular-price" *ngIf="product.regularPrice && product.regularPrice > product.price">
-          {{product.regularPrice | currency}}
-        </span>
-      </div>
-      <div class="price-details" *ngIf="showPriceDetails">
-        <span class="savings" *ngIf="discountAmount > 0">
-          Save {{discountAmount | currency}}
-        </span>
-        <span class="price-per-unit" *ngIf="product.unit && product.unitQuantity">
-          {{(product.price / product.unitQuantity!) | currency}}/{{product.unit}}
-        </span>
-      </div>
+
+    <div class="product-description" *ngIf="showShortDescription">
+      <p>{{ product.description | truncate:80 }}</p>
     </div>
-    
-    <!-- Product Features -->
-    <div class="product-features" *ngIf="product.keyFeatures && product.keyFeatures.length > 0">
-      <span class="feature" *ngFor="let feature of product.keyFeatures.slice(0, 2)">
-        <mat-icon class="feature-icon">check_circle</mat-icon>
-        {{feature}}
+
+    <div class="product-price-container">
+      <p class="product-price">
+        <span class="current-price">{{ (product.discountPrice || product.price || 0) | currency:currencySymbol }}</span>
+        <span class="regular-price" *ngIf="product?.regularPrice && product?.price && (product?.regularPrice || 0) > (product?.price || 0)">
+          {{product.regularPrice | currency:currencySymbol}}
+        </span>
+        <span class="discount-amount savings" *ngIf="discountAmount !== null && discountAmount > 0"> <!-- Added class savings -->
+          Save {{discountAmount | currency:currencySymbol}}
+        </span>
+      </p>
+      <p class="price-per-unit" *ngIf="product?.unit && product?.unitQuantity && product?.price">
+          {{(product.price / product.unitQuantity!) | currency:currencySymbol}}/{{product.unit}}
+      </p>
+    </div>
+
+    <div class="product-features" *ngIf="showKeyFeatures && product?.keyFeatures && (product.keyFeatures?.length || 0) > 0">
+      <span class="feature" *ngFor="let feature of (product.keyFeatures?.slice(0, 2) || [])">
+        <mat-icon class="feature-icon">check_circle_outline</mat-icon> {{feature}}
       </span>
     </div>
-    
-    <!-- Shipping Info -->
+
     <div class="shipping-info" *ngIf="showShippingInfo">
-      <div class="shipping-item" *ngIf="product.freeShipping">
-        <mat-icon>local_shipping</mat-icon>
-        <span>Free Shipping</span>
+      <div class="shipping-item" *ngIf="product?.freeShipping">
+        <mat-icon>local_shipping</mat-icon> Free Shipping
       </div>
-      <div class="shipping-item" *ngIf="product.fastDelivery">
-        <mat-icon>flash_on</mat-icon>
-        <span>Fast Delivery</span>
+      <div class="shipping-item" *ngIf="product?.fastDelivery">
+        <mat-icon>flash_on</mat-icon> Fast Delivery
       </div>
     </div>
-  </div>
-  
-  <!-- Action Buttons -->
-  <div class="product-actions" *ngIf="showActions">
-    <button class="add-to-cart-btn"
-            [class.loading]="addingToCart"
-            (click)="onAddToCart()"
-            [disabled]="product.stockQuantity === 0 || addingToCart"
-            [attr.aria-label]="'Add ' + product.name + ' to cart'">
-      <mat-icon *ngIf="!addingToCart">shopping_cart</mat-icon>
-      <mat-spinner *ngIf="addingToCart" diameter="20"></mat-spinner>
-      <span>{{addingToCart ? 'Adding...' : 'Add to Cart'}}</span>
-    </button>
-    
-    <div class="quantity-controls" *ngIf="showQuantitySelector && product.stockQuantity > 0">
-      <app-quantity-selector
-        [value]="selectedQuantity"
-        [max]="product.stockQuantity"
-        [min]="1"
-        (valueChange)="onQuantityChange($event)">
-      </app-quantity-selector>
+  </mat-card-content>
+
+  <mat-card-actions class="product-card-actions" [ngClass]="{'show-quantity': uiShowQuantitySelector}">
+    <div class="main-actions">
+      <button mat-flat-button color="primary" class="add-to-cart-btn" 
+              (click)="addToCartHandler($event)" 
+              [disabled]="(product.stockQuantity || 0) === 0 || addingToCart">
+        <mat-icon *ngIf="!addingToCart">add_shopping_cart</mat-icon>
+        <mat-progress-spinner *ngIf="addingToCart" mode="indeterminate" diameter="20"></mat-progress-spinner>
+        <span *ngIf="!addingToCart">Add to Cart</span>
+        <span *ngIf="addingToCart">Adding...</span>
+      </button>
     </div>
-    
-    <button class="buy-now-btn"
-            *ngIf="showBuyNow"
-            (click)="onBuyNow()"
-            [disabled]="product.stockQuantity === 0"
-            [attr.aria-label]="'Buy ' + product.name + ' now'">
-      <mat-icon>flash_on</mat-icon>
-      <span>Buy Now</span>
+    <div class="quantity-controls" *ngIf="uiShowQuantitySelector && (product?.stockQuantity || 0) > 0">
+       <button mat-icon-button (click)="decrementQuantity($event)" [disabled]="selectedQuantity === 1">
+        <mat-icon>remove</mat-icon>
+      </button>
+      <input type="number" class="quantity-input" 
+             [(ngModel)]="selectedQuantity" 
+             min="1" [max]="product.stockQuantity || 1" 
+             (change)="onQuantityChange()" (click)="$event.stopPropagation()">
+      <button mat-icon-button (click)="incrementQuantity($event)" [disabled]="selectedQuantity >= (product.stockQuantity || 1)">
+        <mat-icon>add</mat-icon>
+      </button>
+    </div>
+     <button mat-stroked-button class="buy-now-btn" 
+            (click)="buyNowHandler($event)"
+            [disabled]="(product.stockQuantity || 0) === 0">
+      Buy Now
     </button>
-  </div>
-  
-  <!-- Loading Overlay -->
-  <div class="loading-overlay" *ngIf="loading">
-    <mat-spinner diameter="40"></mat-spinner>
-  </div>
-</div>
+  </mat-card-actions>
+</mat-card>

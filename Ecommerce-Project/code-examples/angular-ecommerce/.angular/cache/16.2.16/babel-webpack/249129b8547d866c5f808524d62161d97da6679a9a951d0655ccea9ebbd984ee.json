@@ -1,0 +1,1 @@
+{"ast":null,"code":"export const environment = {\n  production: false,\n  apiUrl: '/api',\n  useMockData: true\n};","map":null,"metadata":{},"sourceType":"module","externalDependencies":[]}

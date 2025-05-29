@@ -31,18 +31,17 @@
                class="product-card-wrapper"
                [class.featured-main]="i === 0"
                [class.featured-secondary]="i === 1 || i === 2">
-            <app-product-card 
+            <app-product-card
               [product]="product"
+              [currencySymbol]="'$'"
               [size]="i === 0 ? 'large' : 'medium'"
-              [showBuyNow]="true"
-              [showQuantitySelector]="false"
-              (addToCart)="addToCart($event)"
-              (addToWishlist)="addToWishlist($event)"
-              (removeFromWishlist)="removeFromWishlist($event)"
-              (addToCompare)="addToCompare($event)"
-              (quickView)="openQuickView($event)"
-              (viewDetails)="viewProductDetails($event)"
-              (buyNow)="buyNow($event)">
+              [showBuyNowButton]="true"
+              [showQuantityControl]="false" 
+              (productAddedToCart)="addToCart($event)"
+              (productAddedToWishlist)="addToWishlist($event)"
+              (productCompared)="addToCompare($event)"
+              (productViewed)="openQuickView($event)"
+              (productBoughtNow)="buyNow($event)">
             </app-product-card>
           </div>
           
@@ -111,7 +110,7 @@
       </div>
       
       <div class="categories-grid">
-        <ng-container *ngIf="(popularCategories$ | async) as categories">
+        <ng-container *ngIf="(topCategories$ | async) as categories">
           <app-category-card 
             *ngFor="let category of categories; trackBy: trackByCategory" 
             [category]="category"
@@ -170,15 +169,13 @@
             <app-product-card 
               [product]="product"
               [layout]="viewMode === 'list' ? 'horizontal' : 'vertical'"
-              [showBuyNow]="true"
-              [showQuantitySelector]="viewMode === 'list'"
-              (addToCart)="addToCart($event)"
-              (addToWishlist)="addToWishlist($event)"
-              (removeFromWishlist)="removeFromWishlist($event)"
-              (addToCompare)="addToCompare($event)"
-              (quickView)="openQuickView($event)"
-              (viewDetails)="viewProductDetails($event)"
-              (buyNow)="buyNow($event)">
+              [showBuyNowButton]="true"
+              [showQuantityControl]="viewMode === 'list'"
+              (productAddedToCart)="addToCart($event)"
+              (productAddedToWishlist)="addToWishlist($event)"
+              (productCompared)="addToCompare($event)"
+              (productViewed)="openQuickView($event)"
+              (productBoughtNow)="buyNow($event)">
             </app-product-card>
           </div>
           
@@ -225,14 +222,12 @@
             </div>
             <app-product-card 
               [product]="product"
-              [showBuyNow]="true"
-              (addToCart)="addToCart($event)"
-              (addToWishlist)="addToWishlist($event)"
-              (removeFromWishlist)="removeFromWishlist($event)"
-              (addToCompare)="addToCompare($event)"
-              (quickView)="openQuickView($event)"
-              (viewDetails)="viewProductDetails($event)"
-              (buyNow)="buyNow($event)">
+              [showBuyNowButton]="true"
+              (productAddedToCart)="addToCart($event)"
+              (productAddedToWishlist)="addToWishlist($event)"
+              (productCompared)="addToCompare($event)"
+              (productViewed)="openQuickView($event)"
+              (productBoughtNow)="buyNow($event)">
             </app-product-card>
           </div>
           

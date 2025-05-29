@@ -3,6 +3,18 @@
   <app-loading-spinner *ngIf="loading$ | async" [overlay]="true"></app-loading-spinner>
   
   <div class="container">
+    <!-- Debug Info -->
+    <div style="background: #f0f0f0; padding: 10px; margin: 10px 0; border-radius: 5px;">
+      <strong>Debug Info:</strong><br>
+      Loading: {{ (loading$ | async) }}<br>
+      Products count: {{ (products$ | async)?.length || 0 }}<br>
+      Filtered products count: {{ (filteredProducts$ | async)?.length || 0 }}<br>
+      Categories count: {{ (categories$ | async)?.length || 0 }}<br>
+      <button mat-raised-button color="primary" (click)="testApiCall()" style="margin-top: 10px;">
+        Test Direct API Call
+      </button>
+    </div>
+    
     <!-- Page Header -->
     <div class="page-header">
       <h1 class="page-title">Shop Products</h1>

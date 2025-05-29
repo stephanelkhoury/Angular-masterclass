@@ -1,0 +1,36 @@
+<div class="container products-page">
+  <header class="page-header">
+    <h1>{{ pageTitle }}</h1>
+    <!-- Add sorting/filtering options here later -->
+  </header>
+
+  <div *ngIf="(products$ | async) as products; else loadingOrError">
+    <div *ngIf="products.length > 0; else noProducts" class="products-grid">
+      <div *ngFor="let product of products" class="product-card">
+        <a [routerLink]="['/products', product.id]" class="product-link">
+          <img [src]="product.imageUrl" [alt]="product.name" class="product-image">
+          <div class="product-info">
+            <h3 class="product-name">{{ product.name }}</h3>
+            <p class="product-category">{{ product.category }}</p>
+            <p class="product-price">{{ product.price | currency:'USD':'symbol' }}</p>
+          </div>
+        </a>
+        <button class="btn btn-primary add-to-cart-btn">Add to Cart</button>
+      </div>
+    </div>
+    <ng-template #noProducts>
+      <div class="no-products-message">
+        <mat-icon>search_off</mat-icon>
+        <p>No products found matching your criteria.</p>
+      </div>
+    </ng-template>
+  </div>
+
+  <ng-template #loadingOrError>
+    <!-- You can differentiate between loading and error states later -->
+    <div class="loading-message">
+      <mat-spinner diameter="50"></mat-spinner>
+      <p>Loading products...</p>
+    </div>
+  </ng-template>
+</div>

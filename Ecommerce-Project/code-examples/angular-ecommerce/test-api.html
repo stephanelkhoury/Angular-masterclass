@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Fake Store API</title>
+</head>
+<body>
+    <h1>Testing Fake Store API</h1>
+    <div id="results"></div>
+    
+    <script>
+        console.log('Testing Fake Store API...');
+        
+        fetch('https://fakestoreapi.com/products')
+            .then(response => {
+                console.log('Response status:', response.status);
+                console.log('Response headers:', response.headers);
+                return response.json();
+            })
+            .then(data => {
+                console.log('Success! Received data:', data);
+                document.getElementById('results').innerHTML = 
+                    '<h2>Success!</h2><p>Received ' + data.length + ' products</p>' +
+                    '<pre>' + JSON.stringify(data.slice(0, 2), null, 2) + '</pre>';
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('results').innerHTML = 
+                    '<h2>Error!</h2><p>' + error.message + '</p>';
+            });
+    </script>
+</body>
+</html>

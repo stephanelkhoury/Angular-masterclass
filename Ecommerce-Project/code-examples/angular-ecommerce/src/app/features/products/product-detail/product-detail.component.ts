@@ -110,7 +110,13 @@ export class ProductDetailComponent implements OnInit {
   }
   
   submitReview(product: Product, review: Review): void {
-    this.productService.addProductReview(product.id, review);
+    // Extract only the required properties for the addProductReview method
+    const reviewData = {
+      rating: review.rating,
+      title: review.title || '', // Ensure title is provided even if it's optional in the Review interface
+      comment: review.comment
+    };
+    this.productService.addProductReview(product.id, reviewData);
     this.notificationService.show('Thank you for your review!');
   }
   

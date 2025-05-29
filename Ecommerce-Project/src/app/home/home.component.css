@@ -1,0 +1,131 @@
+/* Home Component Styles */ /* ...existing code... */
+.home-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 2rem;
+}
+
+.product-card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+  padding: 1.5rem;
+  transition: box-shadow 0.2s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.product-card:hover {
+  box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+}
+
+.product-card img {
+  max-width: 100%;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.product-card h3 {
+  font-size: 1.2rem;
+  margin: 0.5rem 0;
+}
+
+.product-card p {
+  color: #666;
+  font-size: 1rem;
+  margin-bottom: 1rem;
+}
+
+.product-card .price {
+  font-weight: bold;
+  color: #1976d2;
+  margin-bottom: 1rem;
+}
+
+.product-card button {
+  background: #1976d2;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem 1.5rem;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background 0.2s;
+}
+
+.product-card button:hover {
+  background: #125ea2;
+}
+/* ...existing code... */
+/* Responsive Styles */
+
+@media (max-width: 600px) {
+  .product-grid {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 900px) {
+  .product-grid {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  }
+}
+@media (max-width: 1200px) {
+  .home-container {
+    padding: 1rem;
+  }
+}
+@media (max-width: 700px) {
+  .product-grid {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 500px) {
+  .product-card {
+    padding: 1rem;
+  }
+  .product-card h3 {
+    font-size: 1.1rem;
+  }
+  .product-card p {
+    font-size: 0.9rem;
+  }
+}
+@media (max-width: 400px) {
+  .product-card button {
+    width: 100%;
+    padding: 0.5rem;
+    font-size: 0.9rem;
+  }
+}
+@media (max-width: 300px) {
+  .product-card {
+    padding: 0.5rem;
+  }
+  .product-card h3 {
+    font-size: 1rem;
+  }
+  .product-card p {
+    font-size: 0.8rem;
+  }
+}
+/* Add any additional styles specific to the home component here */
+/* Example: */
+.home-title {
+  font-size: 2.5rem;
+  color: #1976d2;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+.home-description {
+  font-size: 1.2rem;
+  color: #555;
+  margin-bottom: 2rem;
+  text-align: center;
+}   

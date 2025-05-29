@@ -7,13 +7,15 @@
   position: sticky;
   top: 0;
   z-index: 1000;
-  background: var(--surface-color);
-  border-bottom: 1px solid var(--border-color);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
+  background: var(--surface-color, #fff);
+  border-bottom: 1px solid var(--border-color, #e5e7eb);
+  box-shadow: 0 2px 8px rgba(var(--primary-rgb), 0.06);
+  transition: box-shadow 0.3s, background 0.3s;
 
   &.scrolled {
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 4px 12px rgba(var(--primary-rgb), 0.1);
+    // background: rgba(255,255,255,0.95); // Optional: slightly transparent on scroll
+    // backdrop-filter: blur(5px); // Optional: blur effect
   }
 }
 
@@ -32,20 +34,29 @@
 
 // Main header container
 .header-main {
-  padding: 16px 0;
+  padding: 12px 0;
 
   .container {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    min-height: 72px;
     gap: 2rem;
 
-    @media (max-width: 1024px) {
+    @media (max-width: 900px) {
       gap: 1rem;
     }
 
     @media (max-width: 768px) {
       gap: 0.5rem;
+      padding: 0 1rem;
+    }
+
+    @media (max-width: 600px) {
+      flex-direction: column;
+      min-height: 56px;
+      gap: 0.5rem;
+      padding: 0 0.5rem;
     }
   }
 }
@@ -54,39 +65,34 @@
 .logo-section {
   display: flex;
   align-items: center;
-  flex-shrink: 0;
-  text-decoration: none;
-  color: var(--text-primary);
+  gap: 0.7rem;
 
   .logo {
-    height: 40px;
+    height: 38px; // Adjusted for better balance
     width: auto;
-    margin-right: 12px;
 
     @media (max-width: 768px) {
-      height: 32px;
-      margin-right: 8px;
+      height: 30px;
     }
   }
 
   .brand-text {
     .brand-name {
-      font-size: 1.5rem;
-      font-weight: 700;
+      font-size: 1.6rem; // Adjusted
+      font-weight: 800;
       color: var(--primary-color);
       margin: 0;
-      line-height: 1;
+      letter-spacing: 1px;
 
       @media (max-width: 768px) {
-        font-size: 1.25rem;
+        font-size: 1.3rem;
       }
     }
 
     .brand-tagline {
-      font-size: 0.75rem;
-      color: var(--text-secondary);
+      font-size: 0.9rem;
+      color: var(--text-muted);
       margin: 0;
-      line-height: 1;
 
       @media (max-width: 768px) {
         display: none;
@@ -98,11 +104,20 @@
 // Search section
 .search-section {
   flex: 1;
-  max-width: 500px;
+  max-width: 420px;
   position: relative;
 
-  @media (max-width: 768px) {
-    display: none;
+  @media (max-width: 900px) { // Show search on tablets if nav is hidden
+    display: block;
+    order: 3; // Moves search below logo on column layout for mobile
+    width: 100%; // Full width on mobile/tablet when it's in column
+    margin-top: 0.5rem;
+    max-width: none;
+  }
+
+  @media (min-width: 901px) { // Ensure it's in its original place on desktop
+    order: 0;
+    margin-top: 0;
   }
 
   .search-container {
@@ -111,17 +126,16 @@
 
     .search-input {
       width: 100%;
-      padding: 12px 16px 12px 48px;
-      border: 2px solid var(--border-color);
-      border-radius: 50px;
+      padding: 10px 16px 10px 44px;
+      border-radius: 32px;
+      background: var(--surface-light, #f8fafc);
+      border: 1.5px solid var(--border-color, #e5e7eb);
       font-size: 1rem;
-      transition: all 0.3s ease;
-      background: var(--surface-light);
+      transition: border 0.2s ease;
 
       &:focus {
-        outline: none;
         border-color: var(--primary-color);
-        box-shadow: 0 0 0 4px rgba(var(--primary-rgb), 0.1);
+        box-shadow: 0 0 0 2px #2563eb22;
       }
 
       &::placeholder {
@@ -131,7 +145,7 @@
 
     .search-icon {
       position: absolute;
-      left: 16px;
+      left: 14px;
       top: 50%;
       transform: translateY(-50%);
       color: var(--text-muted);
@@ -140,7 +154,7 @@
 
     .search-clear {
       position: absolute;
-      right: 16px;
+      right: 14px;
       top: 50%;
       transform: translateY(-50%);
       background: none;
@@ -149,11 +163,11 @@
       cursor: pointer;
       padding: 4px;
       border-radius: 50%;
-      transition: all 0.2s ease;
+      transition: background 0.2s ease, color 0.2s ease;
 
       &:hover {
-        background: var(--error-light);
-        color: var(--error-color);
+        background: #fca5a5;
+        color: #ef4444;
       }
     }
   }
@@ -164,10 +178,10 @@
     top: 100%;
     left: 0;
     right: 0;
-    background: white;
-    border: 1px solid var(--border-color);
+    background: #fff;
+    border: 1px solid var(--border-color, #e5e7eb);
     border-radius: 12px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
     z-index: 1001;
     margin-top: 4px;
     overflow: hidden;
@@ -175,15 +189,16 @@
     .suggestion-item {
       padding: 12px 16px;
       cursor: pointer;
-      border-bottom: 1px solid var(--border-light);
+      border-bottom: 1px solid var(--border-light, #e5e7eb);
       transition: background-color 0.2s ease;
+      font-size: 1rem;
 
       &:last-child {
         border-bottom: none;
       }
 
       &:hover {
-        background: var(--surface-light);
+        background: var(--surface-light, #f8fafc);
       }
 
       .suggestion-icon {
@@ -198,53 +213,76 @@
 .nav-section {
   display: flex;
   align-items: center;
-
-  @media (max-width: 1024px) {
-    display: none;
-  }
+  height: 100%;
 
   .nav-menu {
     display: flex;
+    align-items: center;
+    gap: 2rem;
     list-style: none;
     margin: 0;
     padding: 0;
-    gap: 2rem;
 
     .nav-item {
       position: relative;
+      height: 100%;
 
       .nav-link {
         display: flex;
         align-items: center;
-        text-decoration: none;
+        padding: 0.5rem 1.2rem;
+        border-radius: 8px;
         color: var(--text-primary);
-        font-weight: 500;
-        padding: 8px 0;
-        transition: color 0.3s ease;
+        font-weight: 600;
+        font-size: 1.05rem;
+        letter-spacing: 0.01em;
+        transition: background 0.18s, color 0.18s;
+        position: relative;
 
-        &:hover {
-          color: var(--primary-color);
+        &:hover,
+        &:focus {
+          background: var(--primary-light);
+          color: #fff;
+          text-decoration: none;
         }
 
         .nav-icon {
-          margin-right: 6px;
-          font-size: 1.125rem;
+          margin-right: 8px;
+          font-size: 1.2rem;
         }
       }
 
       &.has-dropdown {
-        .nav-link::after {
-          content: '';
+        position: relative; // Important for positioning the mega menu
+
+        .nav-link::after { // If you have a dropdown arrow
+          content: ''; // Or your icon
           margin-left: 6px;
           border: 4px solid transparent;
-          border-top-color: currentColor;
+          border-top-color: currentColor; // Or var(--text-primary)
           transition: transform 0.3s ease;
         }
 
-        &:hover .nav-link::after {
+        &:hover .nav-link::after { // Arrow rotation on hover
           transform: rotate(180deg);
         }
       }
+
+      &.has-dropdown.mega-menu-trigger { // Ensure the trigger LI is relative for positioning the mega-menu
+        position: relative; // Crucial for positioning the absolute mega-menu
+      }
+    }
+  }
+
+  @media (max-width: 900px) { // Hide desktop nav earlier if search takes space
+    display: none;
+  }
+
+  .nav-menu .nav-item .nav-link {
+    &.active {
+      color: var(--primary-color);
+      font-weight: 700;
+      // background: rgba(var(--primary-rgb), 0.1); // Optional active background
     }
   }
 }
@@ -253,49 +291,30 @@
 .user-actions {
   display: flex;
   align-items: center;
-  gap: 1rem;
-
-  @media (max-width: 768px) {
-    gap: 0.5rem;
-  }
+  gap: 0.7rem;
 
   .action-button {
-    position: relative;
-    background: none;
-    border: none;
-    padding: 8px;
+    background: var(--surface-light, #f8fafc);
+    color: var(--primary-color);
     border-radius: 50%;
-    cursor: pointer;
-    color: var(--text-primary);
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    padding: 10px;
+    margin-left: 0.2rem;
+    transition: background 0.18s, color 0.18s, box-shadow 0.18s;
 
     &:hover {
-      background: var(--surface-light);
-      color: var(--primary-color);
-    }
-
-    .action-icon {
-      font-size: 1.25rem;
+      background: var(--primary-light);
+      color: #fff;
+      box-shadow: 0 2px 8px rgba(var(--primary-rgb), 0.10);
     }
 
     .badge {
-      position: absolute;
-      top: -2px;
-      right: -2px;
-      background: var(--accent-color);
-      color: white;
-      border-radius: 50%;
+      background: var(--error-color);
+      color: #fff;
+      font-size: 0.8rem;
       min-width: 18px;
       height: 18px;
-      font-size: 0.75rem;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      line-height: 1;
+      top: -4px;
+      right: -4px;
     }
   }
 
@@ -391,49 +410,93 @@
       }
     }
   }
+
+  .user-menu {
+    position: relative;
+    .user-avatar-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+  }
+
+  .login-btn {
+    padding: 0.4rem 1rem;
+    font-weight: 600;
+  }
+
+  @media (max-width: 900px) { // Ensure user actions are always visible
+     // If search moves to a new line, user actions might need to adjust
+  }
 }
 
 // Mega menu (desktop)
 .mega-menu {
   position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
-  background: white;
-  border-bottom: 1px solid var(--border-color);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  z-index: 999;
-  transform: translateY(-10px);
+  top: 100%; // Position below the nav item (Categories link)
+  left: 0; // Align with the left edge of the trigger element by default
+  // To center it under the trigger if the trigger itself is not full width:
+  // left: 50%;
+  // transform: translateX(-50%); // This would center it under the trigger.
+  // However, for "fit-content" that might extend beyond the trigger, simple left: 0 is often fine.
+  // If the "Categories" link is far left and mega menu is wide, it might go off-screen.
+  // Consider this if your layout needs it:
+  // For a mega menu that might be wider than its trigger but shouldn't go off-screen:
+  // You might need JS or more complex CSS if it needs to dynamically adjust left/right based on viewport.
+  // For now, `left: 0` relative to the trigger.
+
+  width: max-content; // Make the mega menu as wide as its content needs.
+  min-width: 400px; // Optional: ensure it has a reasonable minimum width for aesthetics.
+  max-width: calc(100vw - 40px); // Optional: prevent it from being wider than viewport minus some padding.
+
+  background: var(--surface-color, #fff);
+  border: 1px solid var(--border-color); // Add a full border for better definition
+  border-top: none; // Assuming top border is handled by header or not desired here
+  border-radius: 0 0 var(--radius-lg, 8px) var(--radius-lg, 8px);
+  box-shadow: var(--shadow-xl, 0 10px 25px rgba(0,0,0,0.15)); // Enhanced shadow
+  z-index: var(--z-dropdown, 1000);
+
   opacity: 0;
   visibility: hidden;
-  transition: all 0.3s ease;
+  transform: translateY(10px); // Start slightly lower for animation
+  // If you used left: 50% and translateX(-50%) for centering under trigger:
+  // transform: translateX(-50%) translateY(10px); 
+  transition: opacity 0.25s ease-out, transform 0.25s ease-out, visibility 0.25s ease-out;
+  pointer-events: none;
 
   &.open {
-    transform: translateY(0);
     opacity: 1;
     visibility: visible;
-    animation: slideDown 0.3s ease;
+    transform: translateY(0);
+    // If you used left: 50% and translateX(-50%) for centering under trigger:
+    // transform: translateX(-50%) translateY(0);
+    pointer-events: auto;
   }
 
   .mega-menu-content {
-    padding: 2rem 0;
+    // If .container was removed from HTML for this div, add padding here:
+    padding: var(--spacing-lg, 1.5rem); 
 
     .mega-menu-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 2rem;
+      grid-template-columns: repeat(4, auto); // Each column takes width of its content
+      // Using `auto` for column width with `max-content` on parent ensures columns are just wide enough.
+      // `1fr` would make them equal fractions of the `max-content` width. `auto` is more "fit".
+      gap: var(--spacing-xl, 2rem); // Increased gap for better separation
 
       .mega-menu-category {
         .category-title {
           display: flex;
           align-items: center;
-          font-weight: 600;
+          font-size: var(--text-lg, 1.125rem);
+          font-weight: var(--font-semibold, 600);
           color: var(--primary-color);
-          margin-bottom: 1rem;
+          margin-bottom: var(--spacing-md, 1rem); // Increased bottom margin
 
           .category-icon {
-            margin-right: 8px;
-            font-size: 1.25rem;
+            margin-right: var(--spacing-sm, 0.5rem); // Adjusted spacing
+            font-size: 1.35rem; // Slightly larger icon
           }
         }
 
@@ -443,15 +506,19 @@
           padding: 0;
 
           .category-link {
-            margin-bottom: 8px;
+            margin-bottom: var(--spacing-sm, 0.5rem); // Adjusted spacing
 
             a {
-              color: var(--text-primary);
+              color: var(--text-secondary);
               text-decoration: none;
-              transition: color 0.3s ease;
+              padding: var(--spacing-xs, 0.25rem) var(--spacing-sm, 0.5rem); // Added some padding
+              display: block;
+              border-radius: var(--radius-md, 6px); // Consistent radius
+              transition: color 0.2s ease, background-color 0.2s ease;
 
               &:hover {
-                color: var(--primary-color);
+                color: var(--primary-dark);
+                background-color: rgba(var(--primary-rgb), 0.08); // Slightly darker hover
               }
             }
           }
@@ -512,12 +579,17 @@
       border: 2px solid var(--border-color);
       border-radius: 8px;
       font-size: 1rem;
-      margin-bottom: 1rem;
+      margin-bottom: 1.5rem; // More space before button
 
       &:focus {
         outline: none;
         border-color: var(--primary-color);
       }
+    }
+
+    .btn-primary { // Ensure button styling
+      padding: 0.75rem;
+      font-size: 1rem;
     }
   }
 
@@ -586,6 +658,12 @@
     .mobile-menu-nav {
       padding: 1rem 0;
 
+      ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+
       .mobile-nav-item {
         .mobile-nav-link {
           display: flex;
@@ -633,13 +711,13 @@
             transition: max-height 0.3s ease;
 
             &.expanded {
-              max-height: 300px;
+              max-height: 500px; // Adjust as needed
             }
 
             .mobile-submenu-item {
               .mobile-submenu-link {
                 display: block;
-                padding: 8px 3rem;
+                padding: 10px 1rem 10px 3rem; // Indent sub-items
                 text-decoration: none;
                 color: var(--text-secondary);
                 font-size: 0.875rem;
@@ -692,6 +770,15 @@
             }
           }
         }
+      }
+
+      .btn-danger { // Ensure button styling
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        padding: 0.75rem;
+        font-size: 1rem;
       }
     }
   }
@@ -859,5 +946,117 @@
 @media (max-width: 480px) {
   .mobile-menu-overlay .mobile-menu-content {
     width: 100%;
+  }
+}
+
+// Mobile nav improvements
+@media (max-width: 1024px) {
+  .nav-section {
+    display: none;
+  }
+
+  .user-actions .mobile-menu-btn {
+    display: flex;
+  }
+}
+
+@media (max-width: 600px) {
+  .header-main .container {
+    min-height: 56px;
+    padding: 0 0.5rem;
+  }
+
+  .logo-section .brand-text .brand-name {
+    font-size: 1.1rem;
+  }
+
+  .user-actions {
+    gap: 0.2rem;
+
+    .action-button {
+      padding: 7px;
+
+      .action-icon {
+        font-size: 1.1rem;
+      }
+    }
+  }
+}
+
+// Remove any extra top bars or double navs
+.top-bar {
+  display: none !important;
+}
+
+// Custom Mat Menu styles (if needed for user dropdown)
+.custom-mat-menu {
+  border-radius: var(--radius-lg) !important;
+  box-shadow: var(--shadow-lg) !important;
+
+  .dropdown-header {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-light);
+    background: var(--surface-light);
+    .user-name {
+      font-weight: 600;
+      margin: 0 0 0.25rem 0;
+      font-size: 1rem;
+    }
+    .user-email {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      margin: 0;
+      word-break: break-all;
+    }
+  }
+  .mat-mdc-menu-item {
+    min-height: 40px;
+    font-size: 0.95rem;
+    .dropdown-icon {
+      margin-right: 0.75rem;
+      color: var(--text-muted);
+      font-size: 1.25rem;
+    }
+    &.danger {
+      color: var(--error-color);
+      .dropdown-icon {
+        color: var(--error-color);
+      }
+      &:hover {
+        background-color: rgba(var(--error-color), 0.1);
+      }
+    }
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 900px) { // Adjusted breakpoint
+  .header-main .container {
+    flex-wrap: wrap; // Allow items to wrap
+    justify-content: space-between; // Keep logo and user actions at ends
+    row-gap: 0.5rem; // Space when items wrap
+  }
+  .logo-section {
+    width: auto; // Don't force full width if search is below
+    margin-right: auto; // Push to left
+  }
+  .user-actions {
+    margin-left: auto; // Push to right
+  }
+}
+
+@media (max-width: 600px) {
+  .header-main .container {
+    flex-direction: row; // Keep logo and actions on one row
+    justify-content: space-between;
+    align-items: center;
+  }
+  .search-section { // Search takes full width below logo/actions row
+    order: 3;
+    width: 100%;
+    margin-top: 0.75rem;
+  }
+  .logo-section {
+    flex-grow: 1; // Allow logo to take available space
   }
 }

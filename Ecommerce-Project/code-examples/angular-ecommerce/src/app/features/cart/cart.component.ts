@@ -27,19 +27,32 @@ export class CartComponent implements OnInit {
     return item.productId;
   }
 
-  increaseQuantity(item: CartItem): void {
-    this.store.dispatch(updateCartItemQuantity({
-      productId: item.productId,
-      quantity: item.quantity + 1
+  updateQuantity(item: CartItem, quantity: number): void {
+    if (quantity > 0) {
+      this.store.dispatch(updateCartItemQuantity({ 
+        productId: item.productId, 
+        quantity 
+      }));
+    } else {
+      this.removeItem(item);
+    }
+  }
+
+  incrementQuantity(item: CartItem): void {
+    this.store.dispatch(updateCartItemQuantity({ 
+      productId: item.productId, 
+      quantity: item.quantity + 1 
     }));
   }
 
-  decreaseQuantity(item: CartItem): void {
+  decrementQuantity(item: CartItem): void {
     if (item.quantity > 1) {
-      this.store.dispatch(updateCartItemQuantity({
-        productId: item.productId,
-        quantity: item.quantity - 1
+      this.store.dispatch(updateCartItemQuantity({ 
+        productId: item.productId, 
+        quantity: item.quantity - 1 
       }));
+    } else {
+      this.removeItem(item);
     }
   }
 

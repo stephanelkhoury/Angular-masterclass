@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, map } from 'rxjs';
+import { BehaviorSubject, Observable, map, of } from 'rxjs';
 import { Product } from '../models/product.model';
 import { StorageService } from './storage.service';
 
@@ -61,5 +61,24 @@ export class WishlistService {
 
   getWishlist(): Product[] {
     return this.wishlistSubject.value;
+  }
+
+  // Toggles item and returns an observable indicating the new state (e.g., true if added, false if removed)
+  toggleWishlist(productId: string): Observable<boolean> {
+    let currentWishlist = this.getWishlist();
+    const productIndex = currentWishlist.findIndex(item => item.id === productId);
+    let added: boolean;
+
+    if (productIndex > -1) {
+      currentWishlist.splice(productIndex, 1); // Remove from wishlist
+      added = false;
+    } else {
+      const product = { id: productId } as Product; // Create a product object with at least the id
+      currentWishlist = [...currentWishlist, product]; // Add to wishlist
+      added = true;
+    }
+    this.wishlistSubject.next(currentWishlist);
+    this.saveWishlist();
+    return of(added); // Simulate async operation and return new state
   }
 }

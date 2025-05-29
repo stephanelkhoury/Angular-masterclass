@@ -7,7 +7,7 @@
 :root {
   // Brand Colors
   --primary-color: #2563eb;
-  --primary-color-rgb: 37, 99, 235;
+  --primary-rgb: 37, 99, 235; // Add this for compatibility
   --primary-light: #3b82f6;
   --primary-dark: #1d4ed8;
   
@@ -50,6 +50,10 @@
   --bg-secondary: #f9fafb;
   --bg-tertiary: #f3f4f6;
   
+  // Surface Colors
+  --surface-color: #fff;         // Add for header/footer backgrounds
+  --surface-light: #f8fafc;      // Add for light backgrounds
+  
   // Text Colors
   --text-primary: #111827;
   --text-secondary: #4b5563;
@@ -58,6 +62,7 @@
   --text-link: var(--primary-color);
   
   // Border Colors
+  --border-color: #e5e7eb;       // Add for border compatibility
   --border-light: #e5e7eb;
   --border-medium: #d1d5db;
   --border-dark: #9ca3af;
@@ -719,4 +724,103 @@
 @keyframes zoomOut {
   from { transform: scale(1.05); opacity: 0; }
   to { transform: scale(1); opacity: 1; }
+}
+
+// ==========================================
+// GLOBAL BASE STYLES
+// ==========================================
+html {
+  box-sizing: border-box;
+  font-size: 16px;
+  scroll-behavior: smooth;
+}
+
+*, *::before, *::after {
+  box-sizing: inherit;
+}
+
+body {
+  font-family: var(--font-primary);
+  font-size: var(--text-base);
+  color: var(--text-primary);
+  background: var(--bg-secondary);
+  margin: 0;
+  padding: 0;
+  line-height: var(--leading-normal);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+// Headings
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-secondary);
+  color: var(--text-primary);
+  margin-top: 0;
+  margin-bottom: 0.5em;
+  font-weight: var(--font-bold);
+  line-height: var(--leading-tight);
+}
+
+h1 { font-size: var(--text-4xl); }
+h2 { font-size: var(--text-3xl); }
+h3 { font-size: var(--text-2xl); }
+h4 { font-size: var(--text-xl); }
+h5 { font-size: var(--text-lg); }
+h6 { font-size: var(--text-base); }
+
+a {
+  color: var(--text-link);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+  &:hover, &:focus {
+    color: var(--primary-dark);
+    text-decoration: underline;
+  }
+}
+
+img {
+  max-width: 100%;
+  display: block;
+  border-radius: var(--radius-md);
+}
+
+button, input, select, textarea {
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+  outline: none;
+}
+
+button {
+  cursor: pointer;
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+ul, ol {
+  padding-left: 1.5em;
+  margin-top: 0;
+  margin-bottom: 1em;
+}
+
+.container {
+  width: 100%;
+  max-width: var(--container-xl);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--spacing-md);
+  padding-right: var(--spacing-md);
+  @media (max-width: 1280px) {
+    max-width: var(--container-lg);
+  }
+  @media (max-width: 1024px) {
+    max-width: var(--container-md);
+  }
+  @media (max-width: 768px) {
+    max-width: 100%;
+    padding-left: var(--spacing-sm);
+    padding-right: var(--spacing-sm);
+  }
 }

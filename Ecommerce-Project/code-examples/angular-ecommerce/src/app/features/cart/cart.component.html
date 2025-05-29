@@ -18,7 +18,7 @@
           <div class="quantity-controls">
             <button 
               type="button"
-              (click)="decreaseQuantity(item)" 
+              (click)="decrementQuantity(item)" 
               [disabled]="item.quantity <= 1"
               aria-label="Decrease quantity">
               −
@@ -26,7 +26,7 @@
             <span>{{ item.quantity }}</span>
             <button 
               type="button"
-              (click)="increaseQuantity(item)"
+              (click)="incrementQuantity(item)"
               aria-label="Increase quantity">
               +
             </button>
