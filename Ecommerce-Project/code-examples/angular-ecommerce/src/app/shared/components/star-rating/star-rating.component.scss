@@ -1,29 +1,162 @@
+// Modern Star Rating Component
+:host {
+  // Design system variables
+  --star-color: #f59e0b;
+  --star-color-inactive: #e5e7eb;
+  --star-color-hover: #fbbf24;
+  --star-size: 20px;
+  --star-spacing: 2px;
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  
+  display: inline-block;
+}
+
 .star-rating-container {
   display: inline-flex;
   align-items: center;
-  gap: 2px;
-
+  gap: var(--star-spacing);
+  
   .star-button {
     background: none;
     border: none;
-    padding: 0;
+    padding: 4px;
     margin: 0;
     cursor: pointer;
-    color: #f9a825; // Gold color for stars
+    color: var(--star-color-inactive);
+    transition: all var(--transition-fast);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    &:hover {
+      color: var(--star-color-hover);
+      transform: scale(1.1);
+      background: rgba(251, 191, 36, 0.1);
+    }
+    
+    &:focus {
+      outline: 2px solid var(--star-color);
+      outline-offset: 2px;
+    }
+    
+    &.filled {
+      color: var(--star-color);
+      
+      &:hover {
+        color: var(--star-color-hover);
+      }
+    }
+    
+    &.half-filled {
+      position: relative;
+      color: var(--star-color-inactive);
+      
+      &::before {
+        content: '★';
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        color: var(--star-color);
+        width: 50%;
+        overflow: hidden;
+        z-index: 1;
+      }
+    }
 
     mat-icon {
-      font-size: 20px; // Adjust size as needed
+      font-size: var(--star-size);
+      width: var(--star-size);
+      height: var(--star-size);
       vertical-align: middle;
+      transition: inherit;
     }
   }
 
   &.readonly .star-button {
     cursor: default;
+    
+    &:hover {
+      transform: none;
+      background: none;
+    }
+  }
+  
+  &.small {
+    --star-size: 16px;
+    --star-spacing: 1px;
+  }
+  
+  &.large {
+    --star-size: 24px;
+    --star-spacing: 4px;
   }
 
-  .review-count {
+  .rating-display {
+    display: flex;
+    align-items: center;
+    gap: 8px;
     margin-left: 8px;
-    font-size: 0.9em;
-    color: #757575;
+    
+    .rating-value {
+      font-weight: 600;
+      color: #374151;
+      font-size: 0.875rem;
+    }
+    
+    .review-count {
+      font-size: 0.875rem;
+      color: #6b7280;
+      
+      &:hover {
+        color: #374151;
+        text-decoration: underline;
+        cursor: pointer;
+      }
+    }
+  }
+}
+
+// Animation for star filling
+@keyframes starFill {
+  from {
+    transform: scale(0.8);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+.star-button.filled {
+  animation: starFill 200ms ease-out;
+}
+
+// Accessibility improvements
+@media (prefers-reduced-motion: reduce) {
+  .star-button {
+    transition: none;
+    
+    &:hover {
+      transform: none;
+    }
+  }
+  
+  .star-button.filled {
+    animation: none;
+  }
+}
+
+// High contrast mode
+@media (prefers-contrast: high) {
+  :host {
+    --star-color: #000000;
+    --star-color-inactive: #666666;
+    --star-color-hover: #333333;
+  }
+  
+  .star-button {
+    border: 1px solid currentColor;
   }
 }

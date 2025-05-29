@@ -1,44 +1,224 @@
-<div class="hero-banner">
-  <div class="hero-slider">
-    <div class="hero-slide" *ngFor="let slide of slides; let i = index" [class.active]="i === currentSlideIndex">
-      <div class="slide-bg" [ngStyle]="{'background-image': 'url(' + slide.imageSrc + ')'}"></div>
-      <div class="slide-content">
-        <div class="container">
-          <span class="slide-subtitle">{{slide.subtitle}}</span>
-          <h1 class="slide-title">{{slide.title}}</h1>
-          <p class="slide-description">{{slide.description}}</p>
-          <a [routerLink]="slide.buttonLink" mat-raised-button color="primary" class="shop-now-btn">{{slide.buttonText}}</a>
+<div class="hero-banner" data-aos="fade-in">
+  <!-- Modern Hero Section with Gradient Background -->
+  <div class="hero-main">
+    <div class="hero-background">
+      <div class="gradient-overlay"></div>
+      <div class="geometric-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+      </div>
+      <!-- High-quality hero image -->
+      <img 
+        src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" 
+        alt="Shopping Experience" 
+        class="hero-image"
+        loading="eager"
+      />
+    </div>
+    
+    <div class="hero-content">
+      <div class="container">
+        <div class="hero-text" data-aos="fade-up" data-aos-delay="200">
+          <div class="hero-badge">
+            <i class="fas fa-star"></i>
+            <span>Premium Quality</span>
+          </div>
+          <h1 class="hero-title">
+            Discover Amazing
+            <span class="gradient-text">Products</span>
+            for Your Lifestyle
+          </h1>
+          <p class="hero-description">
+            Shop from thousands of premium products with free shipping, 
+            easy returns, and 24/7 customer support. Your satisfaction is our priority.
+          </p>
+          
+          <div class="hero-stats" data-aos="fade-up" data-aos-delay="400">
+            <div class="stat-item">
+              <div class="stat-icon">
+                <i class="fas fa-users"></i>
+              </div>
+              <div class="stat-info">
+                <span class="stat-number">50K+</span>
+                <span class="stat-label">Happy Customers</span>
+              </div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-icon">
+                <i class="fas fa-box"></i>
+              </div>
+              <div class="stat-info">
+                <span class="stat-number">10K+</span>
+                <span class="stat-label">Products</span>
+              </div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-icon">
+                <i class="fas fa-shipping-fast"></i>
+              </div>
+              <div class="stat-info">
+                <span class="stat-number">24h</span>
+                <span class="stat-label">Fast Delivery</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="hero-actions" data-aos="fade-up" data-aos-delay="600">
+            <button mat-raised-button class="btn-primary hero-btn" routerLink="/products">
+              <i class="fas fa-shopping-bag"></i>
+              <span>Shop Now</span>
+            </button>
+            <button mat-stroked-button class="btn-secondary hero-btn" (click)="scrollToCategories()">
+              <i class="fas fa-play"></i>
+              <span>Explore Categories</span>
+            </button>
+          </div>
+        </div>
+        
+        <div class="hero-visual" data-aos="fade-left" data-aos-delay="300">
+          <div class="product-showcase">
+            <div class="showcase-card" *ngFor="let product of featuredProducts; let i = index" 
+                 [style.animation-delay.ms]="i * 200">
+              <div class="product-image">
+                <img [src]="product.image || 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=300&h=300&fit=crop'" 
+                     [alt]="product.name" />
+                <div class="product-badge" *ngIf="product.isNew">New</div>
+              </div>
+              <div class="product-info">
+                <h4 class="product-name">{{ product.name }}</h4>
+                <div class="product-price">
+                  <span class="current-price">${{ product.price }}</span>
+                  <span class="original-price" *ngIf="product.originalPrice">${{ product.originalPrice }}</span>
+                </div>
+                <div class="product-rating">
+                  <div class="stars">
+                    <i class="fas fa-star" *ngFor="let star of [1,2,3,4,5]; let j = index" 
+                       [class.filled]="j < product.rating"></i>
+                  </div>
+                  <span class="rating-count">({{ product.reviewCount || 0 }})</span>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
-    
-    <!-- Slider Controls -->
-    <div class="slider-controls">
-      <button mat-icon-button class="slider-arrow prev" (click)="previousSlide()">
-        <mat-icon>chevron_left</mat-icon>
-      </button>
-      <div class="slider-dots">
-        <span 
-          class="slider-dot" 
-          *ngFor="let slide of slides; let i = index" 
-          [class.active]="i === currentSlideIndex"
-          (click)="goToSlide(i)">
-        </span>
-      </div>
-      <button mat-icon-button class="slider-arrow next" (click)="nextSlide()">
-        <mat-icon>chevron_right</mat-icon>
-      </button>
-    </div>
   </div>
   
-  <div class="search-bar-container">
-    <div class="search-bar">
-      <mat-form-field appearance="outline" class="search-input">
-        <mat-label>Search for products</mat-label>
-        <input matInput placeholder="What are you looking for?" [formControl]="searchControl" (keyup.enter)="onSearch()">
-        <mat-icon matSuffix>search</mat-icon>
-      </mat-form-field>
-      <button mat-raised-button color="primary" class="search-button" (click)="onSearch()">Search</button>
+  <!-- Enhanced Search Section -->
+  <div class="hero-search" data-aos="fade-up" data-aos-delay="800">
+    <div class="container">
+      <div class="search-container">
+        <div class="search-wrapper">
+          <div class="search-input-group">
+            <div class="search-icon">
+              <i class="fas fa-search"></i>
+            </div>
+            <input 
+              type="text" 
+              class="search-input" 
+              placeholder="Search for products, brands, categories..."
+              [formControl]="searchControl"
+              (keyup.enter)="onSearch()"
+              (focus)="showSearchSuggestions = true"
+              (blur)="hideSearchSuggestions()"
+            />
+            <div class="search-filters">
+              <button mat-button [matMenuTriggerFor]="categoryMenu" class="filter-btn">
+                <span>All Categories</span>
+                <i class="fas fa-chevron-down"></i>
+              </button>
+            </div>
+            <button mat-raised-button class="search-btn" (click)="onSearch()">
+              <i class="fas fa-search"></i>
+              <span>Search</span>
+            </button>
+          </div>
+          
+          <!-- Search Suggestions -->
+          <div class="search-suggestions" *ngIf="showSearchSuggestions && searchSuggestions.length > 0">
+            <div class="suggestions-header">
+              <h6>Popular Searches</h6>
+            </div>
+            <div class="suggestion-item" *ngFor="let suggestion of searchSuggestions" 
+                 (click)="selectSuggestion(suggestion)">
+              <i class="fas fa-search suggestion-icon"></i>
+              <span class="suggestion-text">{{ suggestion }}</span>
+              <i class="fas fa-trending-up trending-icon" *ngIf="suggestion.trending"></i>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Quick Categories -->
+        <div class="quick-categories">
+          <span class="quick-label">Popular:</span>
+          <div class="category-tags">
+            <button mat-button class="category-tag" *ngFor="let category of popularCategories" 
+                    (click)="searchByCategory(category)">
+              <i [class]="category.icon"></i>
+              <span>{{ category.name }}</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Trust Indicators -->
+  <div class="trust-indicators" data-aos="fade-up" data-aos-delay="1000">
+    <div class="container">
+      <div class="trust-items">
+        <div class="trust-item">
+          <div class="trust-icon">
+            <i class="fas fa-shield-alt"></i>
+          </div>
+          <div class="trust-text">
+            <span class="trust-title">Secure Shopping</span>
+            <span class="trust-desc">256-bit SSL encryption</span>
+          </div>
+        </div>
+        <div class="trust-item">
+          <div class="trust-icon">
+            <i class="fas fa-truck"></i>
+          </div>
+          <div class="trust-text">
+            <span class="trust-title">Free Shipping</span>
+            <span class="trust-desc">On orders over $50</span>
+          </div>
+        </div>
+        <div class="trust-item">
+          <div class="trust-icon">
+            <i class="fas fa-undo"></i>
+          </div>
+          <div class="trust-text">
+            <span class="trust-title">Easy Returns</span>
+            <span class="trust-desc">30-day return policy</span>
+          </div>
+        </div>
+        <div class="trust-item">
+          <div class="trust-icon">
+            <i class="fas fa-headset"></i>
+          </div>
+          <div class="trust-text">
+            <span class="trust-title">24/7 Support</span>
+            <span class="trust-desc">Expert customer service</span>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
+
+<!-- Category Filter Menu -->
+<mat-menu #categoryMenu="matMenu" class="category-filter-menu">
+  <button mat-menu-item (click)="selectCategory('all')">
+    <i class="fas fa-th-large"></i>
+    <span>All Categories</span>
+  </button>
+  <mat-divider></mat-divider>
+  <button mat-menu-item *ngFor="let category of categories" (click)="selectCategory(category.slug)">
+    <i [class]="category.icon"></i>
+    <span>{{ category.name }}</span>
+  </button>
+</mat-menu>

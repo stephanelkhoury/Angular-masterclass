@@ -28,7 +28,7 @@ export const reducer = createReducer(
       // Item exists, update quantity
       updatedItems = state.items.map((cartItem, index) => 
         index === existingItemIndex 
-          ? { ...cartItem, quantity: cartItem.quantity + item.quantity }
+                  ? { ...cartItem, quantity: cartItem.quantity + item.quantity }
           : cartItem
       );
     } else {
@@ -36,11 +36,13 @@ export const reducer = createReducer(
       updatedItems = [...state.items, item];
     }
     
-    return {
+    const newState = {
       ...state,
       items: updatedItems,
       total: calculateTotal(updatedItems)
     };
+    
+    return newState;
   }),
   
   // Remove from cart

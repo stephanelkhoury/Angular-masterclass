@@ -1,107 +1,229 @@
-/* Home Component Styles */ /* ...existing code... */
+/* Modern Home Component Styles */
+:root {
+  --primary-color: #2563eb;
+  --primary-dark: #1d4ed8;
+  --primary-light: #3b82f6;
+  --success-color: #10b981;
+  --error-color: #ef4444;
+  --gray-50: #f9fafb;
+  --gray-100: #f3f4f6;
+  --gray-200: #e5e7eb;
+  --gray-300: #d1d5db;
+  --gray-500: #6b7280;
+  --gray-600: #4b5563;
+  --gray-700: #374151;
+  --gray-800: #1f2937;
+  --gray-900: #111827;
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
+  --radius-2xl: 2rem;
+}
+
 .home-container {
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
-  padding: 2rem 1rem;
+  padding: 3rem 2rem;
+  background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+  min-height: 100vh;
+}
+
+.hero-section {
+  text-align: center;
+  margin-bottom: 4rem;
+  padding: 4rem 2rem;
+  background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+  border-radius: var(--radius-2xl);
+  color: white;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+  opacity: 0.3;
+}
+
+.hero-section h1 {
+  font-size: 3.5rem;
+  font-weight: 800;
+  margin-bottom: 1rem;
+  position: relative;
+  z-index: 1;
+}
+
+.hero-section p {
+  font-size: 1.25rem;
+  margin-bottom: 2rem;
+  opacity: 0.9;
+  position: relative;
+  z-index: 1;
 }
 
 .product-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   gap: 2rem;
+  margin-top: 2rem;
 }
 
 .product-card {
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.07);
-  padding: 1.5rem;
-  transition: box-shadow 0.2s;
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
+  padding: 2rem;
+  transition: all 0.3s ease;
   display: flex;
   flex-direction: column;
   align-items: center;
+  text-align: center;
+  border: 1px solid var(--gray-200);
+  position: relative;
+  overflow: hidden;
+}
+
+.product-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--primary-color), var(--primary-light));
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
 }
 
 .product-card:hover {
-  box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+  transform: translateY(-8px);
+  box-shadow: var(--shadow-xl);
+}
+
+.product-card:hover::before {
+  transform: scaleX(1);
 }
 
 .product-card img {
   max-width: 100%;
-  border-radius: 8px;
-  margin-bottom: 1rem;
+  height: 200px;
+  object-fit: cover;
+  border-radius: var(--radius-lg);
+  margin-bottom: 1.5rem;
+  transition: transform 0.3s ease;
+}
+
+.product-card:hover img {
+  transform: scale(1.05);
 }
 
 .product-card h3 {
-  font-size: 1.2rem;
-  margin: 0.5rem 0;
-}
-
-.product-card p {
-  color: #666;
-  font-size: 1rem;
-  margin-bottom: 1rem;
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 1rem 0;
+  color: var(--gray-900);
 }
 
 .product-card .price {
-  font-weight: bold;
-  color: #1976d2;
-  margin-bottom: 1rem;
+  font-size: 1.75rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 1.5rem;
+}
+
+.product-card p {
+  color: var(--gray-600);
+  font-size: 1rem;
+  margin-bottom: 1.5rem;
+  line-height: 1.6;
 }
 
 .product-card button {
-  background: #1976d2;
-  color: #fff;
+  background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+  color: white;
   border: none;
-  border-radius: 6px;
-  padding: 0.5rem 1.5rem;
-  cursor: pointer;
+  border-radius: var(--radius-lg);
+  padding: 0.875rem 2rem;
   font-size: 1rem;
-  transition: background 0.2s;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: auto;
+  box-shadow: var(--shadow-md);
+  position: relative;
+  overflow: hidden;
+}
+
+.product-card button::before {
+  content: '🛒';
+  margin-right: 0.5rem;
 }
 
 .product-card button:hover {
-  background: #125ea2;
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+  background: linear-gradient(135deg, var(--primary-dark), var(--primary-color));
 }
-/* ...existing code... */
-/* Responsive Styles */
 
-@media (max-width: 600px) {
-  .product-grid {
-    grid-template-columns: 1fr;
-  }
+.product-card button:active {
+  transform: translateY(0);
 }
-@media (max-width: 900px) {
-  .product-grid {
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  }
+
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  font-size: 1.25rem;
+  color: var(--gray-600);
 }
-@media (max-width: 1200px) {
+
+.error-message {
+  text-align: center;
+  color: var(--error-color);
+  font-size: 1.125rem;
+  padding: 2rem;
+  background: rgba(239, 68, 68, 0.1);
+  border-radius: var(--radius-lg);
+  margin: 2rem 0;
+}
+
+@media (max-width: 768px) {
   .home-container {
-    padding: 1rem;
+    padding: 2rem 1rem;
   }
-}
-@media (max-width: 700px) {
+  
+  .hero-section {
+    padding: 3rem 1.5rem;
+    margin-bottom: 3rem;
+  }
+  
+  .hero-section h1 {
+    font-size: 2.5rem;
+  }
+  
+  .hero-section p {
+    font-size: 1.125rem;
+  }
+  
   .product-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
   }
-}
-@media (max-width: 500px) {
+  
   .product-card {
-    padding: 1rem;
-  }
-  .product-card h3 {
-    font-size: 1.1rem;
-  }
-  .product-card p {
-    font-size: 0.9rem;
-  }
-}
-@media (max-width: 400px) {
-  .product-card button {
-    width: 100%;
-    padding: 0.5rem;
-    font-size: 0.9rem;
+    padding: 1.5rem;
   }
 }
 @media (max-width: 300px) {

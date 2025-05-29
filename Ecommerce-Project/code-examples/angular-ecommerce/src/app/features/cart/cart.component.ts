@@ -4,6 +4,7 @@ import { Store } from '@ngrx/store';
 import { CartItem } from '../../core/models/cart-item.model';
 import { updateCartItemQuantity, removeFromCart, clearCart } from '../../store/actions/cart.actions';
 import { selectCartItems, selectCartTotal, selectCartItemCount } from '../../store/selectors/cart.selectors';
+import { AppState } from '../../store';
 
 @Component({
   selector: 'app-cart',
@@ -15,7 +16,7 @@ export class CartComponent implements OnInit {
   total$: Observable<number>;
   itemCount$: Observable<number>;
 
-  constructor(private store: Store) {
+  constructor(private store: Store<AppState>) {
     this.cartItems$ = this.store.select(selectCartItems);
     this.total$ = this.store.select(selectCartTotal);
     this.itemCount$ = this.store.select(selectCartItemCount);

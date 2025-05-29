@@ -42,57 +42,43 @@ export class CartEffects {
   addToCart$ = createEffect(() =>
     this.actions$.pipe(
       ofType(CartActions.addToCart),
-      map(action => action.item), // Extract the item from the action
       withLatestFrom(
         this.store.select(selectCartItems),
         this.store.select(selectIsAuthenticated)
       ),
-      tap(([{ productId, quantity }, _, __]) => { // Destructure from the extracted item
-        this.notificationService.showSuccess(`${productId} added to cart`);
-      }),
-      exhaustMap(([item, currentItems, isAuthenticated]) => {
-        if (isAuthenticated) {
-          // Simulate API call to add item to backend cart
-                  return of({ type: '[Cart API] Add Item Success - Backend (Placeholder)', payload: item }).pipe(
-            map(() => CartActions.loadCartSuccess({ 
-              items: [...currentItems, {
-                productId: item.productId,
-                quantity: item.quantity,
-                name: item.name || '',
-                price: item.price,
-                image: item.image || item.imageUrl || '',
-                unitPrice: item.unitPrice || item.price
-              }]
-            })),
-            catchError(error => of(CartActions.loadCartFailure({ error })))
-          );
-        } else {
-          const cartItem: CartItem = {
-            productId: item.productId,
-            name: item.name || '',
-            price: item.price,
-            image: item.image || item.imageUrl || '',
-            quantity: item.quantity
-          };
+      tap(([action, currentItems, isAuthenticated]) => {
+        this.notificationService.showSuccess(`${action.item.name || action.item.productId} added to cart`);
+        
+        // Only update localStorage for non-authenticated users
+        // The reducer will handle the state update
+        if (!isAuthenticated) {
+          // Sync with localStorage after reducer updates state
+          setTimeout(() => {
+            const updatedItems = [...currentItems];
+            const existingItemIndex = updatedItems.findIndex(cartItem => cartItem.productId === action.item.productId);
 
-          const updatedItems = [...currentItems];
-          const existingItemIndex = updatedItems.findIndex(cartItem => cartItem.productId === item.productId);
-
-          if (existingItemIndex >= 0) {
-            updatedItems[existingItemIndex] = {
-              ...updatedItems[existingItemIndex],
-              quantity: updatedItems[existingItemIndex].quantity + item.quantity
-            };
-          } else {
-            updatedItems.push(cartItem);
-          }
-
-          this.storageService.setItem('cart', JSON.stringify(updatedItems));
-
-          return of(CartActions.syncCartWithServerSuccess());
+            if (existingItemIndex >= 0) {
+              updatedItems[existingItemIndex] = {
+                ...updatedItems[existingItemIndex],
+                quantity: updatedItems[existingItemIndex].quantity + action.item.quantity
+              };
+            } else {
+              const cartItem: CartItem = {
+                productId: action.item.productId,
+                name: action.item.name || '',
+                price: action.item.price,
+                image: action.item.image || action.item.imageUrl || '',
+                quantity: action.item.quantity
+              };
+              updatedItems.push(cartItem);
+            }
+            
+            this.storageService.setItem('cart', JSON.stringify(updatedItems));
+          }, 0);
         }
       })
-    )
+    ),
+    { dispatch: false }
   );
 
   removeFromCart$ = createEffect(() =>

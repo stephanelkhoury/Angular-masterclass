@@ -1,154 +1,233 @@
-<mat-card [ngClass]="cardClasses" class="product-card-item" 
+<div class="modern-product-card" [ngClass]="cardClasses" 
      [class.out-of-stock]="(product.stockQuantity || 0) === 0"
      [class.featured]="product.featured"
+     [class.new-arrival]="isNew"
+     [class.best-seller]="isBestSeller"
      (mouseenter)="onMouseEnter()" 
      (mouseleave)="onMouseLeave()">
 
-  <div class="product-card-header">
-    <a [routerLink]="['/products', product.id]" class="product-image-link">
-      <img mat-card-image [src]="currentDisplayImage" [alt]="product.name" 
-           class="product-image" loading="lazy"
-           (error)="onImageError($event)">
-    </a>
-    <!-- Badges -->
-    <div class="badges-container">
-      <div class="badge discount-badge" *ngIf="discountPercentage !== null && discountPercentage > 0">
-        -{{ discountPercentage }}%
+  <!-- Image Container with Modern Overlay -->
+  <div class="product-image-container">
+    <a [routerLink]="['/products', product.id]" class="image-link">
+      <div class="image-wrapper">
+        <img [src]="currentDisplayImage" [alt]="product.name" 
+             class="product-image" loading="lazy"
+             (error)="onImageError($event)">
+        <div class="image-overlay"></div>
       </div>
-      <div class="badge new-badge" *ngIf="isNew && showNewBadge">NEW</div>
-      <div class="badge featured-badge" *ngIf="product?.featured && showFeaturedBadge">FEATURED</div>
-      <div class="badge bestseller-badge" *ngIf="isBestSeller && showBestsellerBadge">BESTSELLER</div>
-      <div class="badge sold-out-badge" *ngIf="(product?.stockQuantity || 0) === 0 && showSoldOutBadge">SOLD OUT</div>
+    </a>
+    
+    <!-- Modern Badges with Icons -->
+    <div class="product-badges">
+      <div class="badge discount-badge" *ngIf="discountPercentage !== null && discountPercentage > 0">
+        <i class="fas fa-percentage"></i>
+        <span>{{ discountPercentage }}% OFF</span>
+      </div>
+      <div class="badge new-badge" *ngIf="isNew && showNewBadge">
+        <i class="fas fa-sparkles"></i>
+        <span>NEW</span>
+      </div>
+      <div class="badge featured-badge" *ngIf="product?.featured && showFeaturedBadge">
+        <i class="fas fa-star"></i>
+        <span>FEATURED</span>
+      </div>
+      <div class="badge bestseller-badge" *ngIf="isBestSeller && showBestsellerBadge">
+        <i class="fas fa-fire"></i>
+        <span>BESTSELLER</span>
+      </div>
+      <div class="badge sold-out-badge" *ngIf="(product?.stockQuantity || 0) === 0 && showSoldOutBadge">
+        <i class="fas fa-times-circle"></i>
+        <span>SOLD OUT</span>
+      </div>
+      <div class="badge low-stock-badge" *ngIf="(product?.stockQuantity || 0) > 0 && (product?.stockQuantity || 0) <= 5">
+        <i class="fas fa-exclamation-triangle"></i>
+        <span>LOW STOCK</span>
+      </div>
     </div>
 
-    <!-- Quick Actions -->
+    <!-- Enhanced Quick Actions -->
     <div class="quick-actions">
-      <button mat-icon-button class="action-btn" 
+      <button mat-fab color="primary" class="quick-action-btn wishlist-btn" 
+              [class.active]="(isInWishlist$ | async)"
               (click)="addToWishlistHandler($event)" 
               [disabled]="addingToWishlistState"
-              matTooltip="Add to Wishlist" aria-label="Add to wishlist">
-        <mat-icon>{{ (isInWishlist$ | async) ? 'favorite' : 'favorite_border' }}</mat-icon>
+              matTooltip="Add to Wishlist" 
+              matTooltipPosition="left">
+        <i class="fas fa-heart" *ngIf="(isInWishlist$ | async)"></i>
+        <i class="far fa-heart" *ngIf="!(isInWishlist$ | async)"></i>
       </button>
-      <button mat-icon-button class="action-btn" 
+      <button mat-fab color="accent" class="quick-action-btn view-btn" 
               (click)="viewProductHandler($event)"
-              matTooltip="Quick View" aria-label="Quick view product">
-        <mat-icon>visibility</mat-icon>
+              matTooltip="Quick View" 
+              matTooltipPosition="left">
+        <i class="fas fa-eye"></i>
       </button>
-      <button mat-icon-button class="action-btn" 
+      <button mat-fab class="quick-action-btn compare-btn" 
+              [class.active]="(isInCompare$ | async)"
               (click)="compareProductHandler($event)"
               [matTooltip]="(isInCompare$ | async) ? 'Remove from compare' : 'Add to compare'" 
-              aria-label="Compare product">
-        <mat-icon>{{ (isInCompare$ | async) ? 'check_circle' : 'compare_arrows' }}</mat-icon>
+              matTooltipPosition="left">
+        <i class="fas fa-check-circle" *ngIf="(isInCompare$ | async)"></i>
+        <i class="fas fa-balance-scale" *ngIf="!(isInCompare$ | async)"></i>
       </button>
     </div>
 
-    <!-- Image hover controls -->
-    <div class="image-hover-controls" *ngIf="product?.images && (product.images?.length || 0) > 1 && showImageHoverControls">
-      <button mat-icon-button class="hover-control prev" (click)="prevImage($event)" aria-label="Previous image">
-        <mat-icon>chevron_left</mat-icon>
+    <!-- Enhanced Image Navigation -->
+    <div class="image-navigation" *ngIf="product?.images && (product.images?.length || 0) > 1 && showImageHoverControls">
+      <button mat-mini-fab class="nav-btn prev-btn" (click)="prevImage($event)">
+        <i class="fas fa-chevron-left"></i>
       </button>
-      <button mat-icon-button class="hover-control next" (click)="nextImage($event)" aria-label="Next image">
-        <mat-icon>chevron_right</mat-icon>
+      <button mat-mini-fab class="nav-btn next-btn" (click)="nextImage($event)">
+        <i class="fas fa-chevron-right"></i>
       </button>
     </div>
     
-    <!-- Image Indicators -->
+    <!-- Modern Image Indicators -->
     <div class="image-indicators" *ngIf="product?.images && (product.images?.length || 0) > 1 && showImageIndicators">
-      <span class="indicator-dot" 
-            *ngFor="let image of product.images; let i = index"
-            [class.active]="i === currentImageIndex"
-            (click)="setImage(i, $event)"></span>
+      <button class="indicator-dot" 
+              *ngFor="let image of product.images; let i = index"
+              [class.active]="i === currentImageIndex"
+              (click)="setImage(i, $event)"></button>
     </div>
 
-    <!-- Stock Indicator -->
+    <!-- Enhanced Stock Indicator -->
     <div class="stock-indicator" *ngIf="showStockIndicator && product?.stockQuantity !== undefined && (product?.stockQuantity || 0) > 0 && (product?.stockQuantity || 0) <= 10">
       <div class="stock-bar">
         <div class="stock-fill" [style.width.%]="((product.stockQuantity || 0) / 10) * 100"></div>
       </div>
-      <span class="stock-text" *ngIf="product?.stockQuantity">Only {{product.stockQuantity}} left</span>
+      <span class="stock-text">
+        <i class="fas fa-box"></i>
+        Only {{product.stockQuantity}} left
+      </span>
     </div>
   </div>
 
-  <mat-card-content class="product-card-content">
+  <!-- Modern Product Content -->
+  <div class="product-content">
+    <!-- Brand and Category -->
     <div class="product-meta">
-      <span class="product-brand" *ngIf="product?.brand">{{product.brand}}</span>
-      <span class="product-category" *ngIf="product.category && product.category.name">{{product.category.name}}</span>
+      <span class="product-brand" *ngIf="product?.brand">
+        <i class="fas fa-tag"></i>
+        {{product.brand}}
+      </span>
+      <span class="product-category" *ngIf="product.category && product.category.name">
+        <i class="fas fa-layer-group"></i>
+        {{product.category.name}}
+      </span>
     </div>
 
+    <!-- Product Name with Link -->
     <a [routerLink]="['/products', product.id]" class="product-name-link">
       <h3 class="product-name" matTooltip="{{product.name}}">{{product.name}}</h3>
     </a>
     
+    <!-- Enhanced Rating Display -->
     <div class="product-rating" *ngIf="showRating && product?.rating !== undefined && (product?.rating || 0) > 0">
-      <app-star-rating 
-        [rating]="product.rating || 0" 
-        [reviewCount]="product.reviews?.length || 0"
-        [readOnly]="true">
-      </app-star-rating>
+      <div class="rating-stars">
+        <div class="stars-container">
+          <div class="stars-background">
+            <i class="far fa-star" *ngFor="let star of [1,2,3,4,5]"></i>
+          </div>
+          <div class="stars-filled" [style.width.%]="(product.rating || 0) * 20">
+            <i class="fas fa-star" *ngFor="let star of [1,2,3,4,5]"></i>
+          </div>
+        </div>
+        <span class="rating-value">{{product.rating | number:'1.1-1'}}</span>
+      </div>
+      <span class="review-count" *ngIf="product.reviews?.length">
+        ({{product.reviews?.length}} reviews)
+      </span>
     </div>
 
+    <!-- Short Description -->
     <div class="product-description" *ngIf="showShortDescription">
       <p>{{ product.description | truncate:80 }}</p>
     </div>
 
+    <!-- Enhanced Price Container -->
     <div class="product-price-container">
-      <p class="product-price">
-        <span class="current-price">{{ (product.discountPrice || product.price || 0) | currency:currencySymbol }}</span>
+      <div class="price-row">
+        <span class="current-price">
+          <i class="fas fa-dollar-sign"></i>
+          {{ (product.discountPrice || product.price || 0) | currency:currencySymbol:'symbol':'1.0-0' }}
+        </span>
         <span class="regular-price" *ngIf="product?.regularPrice && product?.price && (product?.regularPrice || 0) > (product?.price || 0)">
-          {{product.regularPrice | currency:currencySymbol}}
+          {{product.regularPrice | currency:currencySymbol:'symbol':'1.0-0'}}
         </span>
-        <span class="discount-amount savings" *ngIf="discountAmount !== null && discountAmount > 0"> <!-- Added class savings -->
-          Save {{discountAmount | currency:currencySymbol}}
+      </div>
+      <div class="savings-row" *ngIf="discountAmount !== null && discountAmount > 0">
+        <span class="discount-amount">
+          <i class="fas fa-piggy-bank"></i>
+          Save {{discountAmount | currency:currencySymbol:'symbol':'1.0-0'}}
         </span>
-      </p>
+      </div>
       <p class="price-per-unit" *ngIf="product?.unit && product?.unitQuantity && product?.price">
-          {{(product.price / product.unitQuantity!) | currency:currencySymbol}}/{{product.unit}}
+        {{(product.price / (product.unitQuantity || 1)) | currency:currencySymbol:'symbol':'1.2-2'}}/{{product.unit}}
       </p>
     </div>
 
+    <!-- Key Features -->
     <div class="product-features" *ngIf="showKeyFeatures && product?.keyFeatures && (product.keyFeatures?.length || 0) > 0">
-      <span class="feature" *ngFor="let feature of (product.keyFeatures?.slice(0, 2) || [])">
-        <mat-icon class="feature-icon">check_circle_outline</mat-icon> {{feature}}
-      </span>
+      <div class="feature" *ngFor="let feature of (product.keyFeatures?.slice(0, 2) || [])">
+        <i class="fas fa-check-circle"></i>
+        <span>{{feature}}</span>
+      </div>
     </div>
 
+    <!-- Enhanced Shipping Info -->
     <div class="shipping-info" *ngIf="showShippingInfo">
       <div class="shipping-item" *ngIf="product?.freeShipping">
-        <mat-icon>local_shipping</mat-icon> Free Shipping
+        <i class="fas fa-shipping-fast"></i>
+        <span>Free Shipping</span>
       </div>
       <div class="shipping-item" *ngIf="product?.fastDelivery">
-        <mat-icon>flash_on</mat-icon> Fast Delivery
+        <i class="fas fa-bolt"></i>
+        <span>Fast Delivery</span>
       </div>
     </div>
-  </mat-card-content>
+  </div>
 
-  <mat-card-actions class="product-card-actions" [ngClass]="{'show-quantity': uiShowQuantitySelector}">
-    <div class="main-actions">
-      <button mat-flat-button color="primary" class="add-to-cart-btn" 
+  <!-- Modern Product Actions -->
+  <div class="product-actions" [ngClass]="{'show-quantity': uiShowQuantitySelector}">
+    <!-- Main Add to Cart Button -->
+    <div class="primary-action">
+      <button mat-raised-button color="primary" class="add-to-cart-btn" 
               (click)="addToCartHandler($event)" 
               [disabled]="(product.stockQuantity || 0) === 0 || addingToCart">
-        <mat-icon *ngIf="!addingToCart">add_shopping_cart</mat-icon>
-        <mat-progress-spinner *ngIf="addingToCart" mode="indeterminate" diameter="20"></mat-progress-spinner>
-        <span *ngIf="!addingToCart">Add to Cart</span>
-        <span *ngIf="addingToCart">Adding...</span>
+        <div class="btn-content">
+          <i class="fas fa-shopping-cart" *ngIf="!addingToCart"></i>
+          <mat-progress-spinner *ngIf="addingToCart" mode="indeterminate" diameter="18"></mat-progress-spinner>
+          <span *ngIf="!addingToCart">Add to Cart</span>
+          <span *ngIf="addingToCart">Adding...</span>
+        </div>
       </button>
     </div>
-    <div class="quantity-controls" *ngIf="uiShowQuantitySelector && (product?.stockQuantity || 0) > 0">
-       <button mat-icon-button (click)="decrementQuantity($event)" [disabled]="selectedQuantity === 1">
-        <mat-icon>remove</mat-icon>
-      </button>
-      <input type="number" class="quantity-input" 
-             [(ngModel)]="selectedQuantity" 
-             min="1" [max]="product.stockQuantity || 1" 
-             (change)="onQuantityChange()" (click)="$event.stopPropagation()">
-      <button mat-icon-button (click)="incrementQuantity($event)" [disabled]="selectedQuantity >= (product.stockQuantity || 1)">
-        <mat-icon>add</mat-icon>
+
+    <!-- Quantity Controls -->
+    <div class="quantity-section" *ngIf="uiShowQuantitySelector && (product?.stockQuantity || 0) > 0">
+      <div class="quantity-controls">
+        <button mat-icon-button class="qty-btn" (click)="decrementQuantity($event)" [disabled]="selectedQuantity === 1">
+          <i class="fas fa-minus"></i>
+        </button>
+        <input type="number" class="quantity-input" 
+               [(ngModel)]="selectedQuantity" 
+               min="1" [max]="product.stockQuantity || 1" 
+               (change)="onQuantityChange()" 
+               (click)="$event.stopPropagation()">
+        <button mat-icon-button class="qty-btn" (click)="incrementQuantity($event)" [disabled]="selectedQuantity >= (product.stockQuantity || 1)">
+          <i class="fas fa-plus"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Buy Now Button -->
+    <div class="secondary-action">
+      <button mat-stroked-button color="accent" class="buy-now-btn" 
+              (click)="buyNowHandler($event)"
+              [disabled]="(product.stockQuantity || 0) === 0">
+        <i class="fas fa-bolt"></i>
+        <span>Buy Now</span>
       </button>
     </div>
-     <button mat-stroked-button class="buy-now-btn" 
-            (click)="buyNowHandler($event)"
-            [disabled]="(product.stockQuantity || 0) === 0">
-      Buy Now
-    </button>
-  </mat-card-actions>
-</mat-card>
+  </div>
+</div>
